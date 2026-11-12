@@ -162,7 +162,7 @@ Running a model needs a Wiro AI account and an API key, and each run is charged 
 - **`llm.wiro.ai`**: the writing commands send the selected text, the note (up to 120,000 characters), your question with the note, or for **Continue writing** the last 6,000 characters before the cursor, to the [LLM gateway](https://wiro.ai/docs/completions-api) with your API key. The list of gateway models and their prices loads without your key.
 - **`cdn1.wiro.ai`**: the result files are downloaded from Wiro AI's file host and saved in your vault. The plugin downloads files from `wiro.ai` hosts only.
 
-Only what a command needs is sent: the text above and the files you choose. The rest of the vault stays on your device. The plugin has no telemetry or analytics and makes no requests in the background. See Wiro AI's [privacy policy](https://wiro.ai/agreement/privacy-policy) and [terms of service](https://wiro.ai/agreement/terms-of-service).
+Only what a command needs is sent: the text above and the files you choose. To offer files to choose from, the file fields of **Run a model** and **Run a workflow** list the vault's images, audio files or videos on your device; only the file you pick is read and uploaded. The rest of the vault stays on your device. The plugin has no telemetry or analytics and makes no requests in the background. See Wiro AI's [privacy policy](https://wiro.ai/agreement/privacy-policy) and [terms of service](https://wiro.ai/agreement/terms-of-service).
 
 ## How it works
 

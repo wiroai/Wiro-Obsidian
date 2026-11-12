@@ -1,6 +1,6 @@
 import { Plugin } from 'obsidian';
 import { registerCommands } from './commands';
-import { desktopStreamTransport } from './desktop-stream';
+import { loadDesktopStreamTransport } from './desktop-stream';
 import type { MediaHost } from './features/media';
 import type { TextHost } from './features/text';
 import { obsidianHttp } from './obsidian-http';
@@ -10,14 +10,15 @@ import { WiroSettingTab } from './settings-tab';
 import { HISTORY_VIEW, HistoryView } from './ui/history-view';
 import type { Credentials } from './wiro/auth';
 import { WiroClient } from './wiro/client';
-import { GatewayClient, type GatewayModel } from './wiro/gateway';
+import { GatewayClient, type GatewayModel, type StreamTransport } from './wiro/gateway';
 
 export default class WiroPlugin extends Plugin implements MediaHost, TextHost {
 	settings: WiroSettings = normalizeSettings(undefined);
 	readonly http = obsidianHttp;
 	readonly schemas = new SchemaCache(() => new WiroClient(this.http, null));
 	private readonly jobs = new Set<AbortController>();
-	private readonly stream = desktopStreamTransport();
+	/** Set once Node's https module has loaded on desktop; null on mobile. */
+	private stream: StreamTransport | null = null;
 	private models: Promise<GatewayModel[]> | null = null;
 	private unloading = false;
 
@@ -26,6 +27,9 @@ export default class WiroPlugin extends Plugin implements MediaHost, TextHost {
 		this.addSettingTab(new WiroSettingTab(this.app, this));
 		this.registerView(HISTORY_VIEW, (leaf) => new HistoryView(leaf, this));
 		registerCommands(this);
+		void loadDesktopStreamTransport().then((transport) => {
+			this.stream = transport;
+		});
 	}
 
 	onunload(): void {

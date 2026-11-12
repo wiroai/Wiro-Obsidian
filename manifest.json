@@ -1,7 +1,7 @@
 {
 	"id": "wiro-ai",
 	"name": "Wiro AI",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"minAppVersion": "1.13.2",
 	"description": "Generate, edit and upscale images, make videos, speech and music, transcribe audio, and summarize, rewrite or translate text with models from Wiro AI. Results are saved to your vault and embedded in the note.",
 	"author": "Wiro AI",

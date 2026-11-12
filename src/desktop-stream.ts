@@ -5,18 +5,24 @@ type HttpsModule = typeof import('https');
 
 /**
  * Streams LLM answers on desktop. requestUrl returns a response only once it
- * has ended, and the gateway sends no CORS headers for fetch, so the desktop
- * app reads the stream with Node's https module, which Electron provides.
- * On mobile there is no Node, and the text commands wait for the whole answer.
+ * has ended, so the desktop app reads the stream with Node's https module,
+ * which Electron provides. The module is imported only on desktop; on mobile
+ * there is no Node, this resolves to null and the text commands wait for the
+ * whole answer.
  */
-export function desktopStreamTransport(): StreamTransport | null {
-	if (!Platform.isDesktopApp) return null;
-	let https: HttpsModule;
-	try {
-		https = require('https') as HttpsModule;
-	} catch {
-		return null;
+export async function loadDesktopStreamTransport(): Promise<StreamTransport | null> {
+	if (Platform.isDesktop) {
+		try {
+			const https = await import('https');
+			return httpsTransport(https);
+		} catch {
+			return null;
+		}
 	}
+	return null;
+}
+
+function httpsTransport(https: HttpsModule): StreamTransport {
 	return (request, onData) =>
 		new Promise((resolve, reject) => {
 			const url = new URL(request.url);

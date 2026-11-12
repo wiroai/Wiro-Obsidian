@@ -33,6 +33,9 @@ const context = await esbuild.context({
 	],
 	format: 'cjs',
 	target: 'es2021',
+	// Obsidian loads main.js as CommonJS: a dynamic import() of a Node module
+	// has to become require() to resolve on desktop.
+	supported: { 'dynamic-import': false },
 	logLevel: 'info',
 	sourcemap: prod ? false : 'inline',
 	treeShaking: true,

@@ -25,6 +25,13 @@ export default defineConfig([
 		},
 	},
 	{
+		files: ['**/*.ts'],
+		rules: {
+			// Obsidian's review flags any require() call, guarded or not.
+			'@typescript-eslint/no-require-imports': 'error',
+		},
+	},
+	{
 		files: ['tests/**/*.ts'],
 		languageOptions: {
 			globals: {

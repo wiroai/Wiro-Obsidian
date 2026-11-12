@@ -1,0 +1,10 @@
+{
+	"id": "wiro-ai",
+	"name": "Wiro AI",
+	"version": "1.0.0",
+	"minAppVersion": "1.13.2",
+	"description": "Generate images from a prompt or the selected text, and turn the selection into speech, with models from Wiro AI. The files are saved to your vault and embedded in the note.",
+	"author": "Wiro AI",
+	"authorUrl": "https://wiro.ai",
+	"isDesktopOnly": false
+}

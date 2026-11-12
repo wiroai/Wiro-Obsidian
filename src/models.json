@@ -1,0 +1,2336 @@
+{
+	"image": [
+		{
+			"slug": "google/nano-banana-2-1",
+			"name": "Nano Banana 2.1",
+			"params": [
+				{
+					"id": "prompt",
+					"type": "textarea",
+					"label": "prompt",
+					"required": true,
+					"advanced": false,
+					"defaultValue": ""
+				},
+				{
+					"id": "resolution",
+					"type": "select",
+					"label": "Resolution (K)",
+					"required": true,
+					"advanced": false,
+					"defaultValue": "1K",
+					"options": [
+						{
+							"value": "1K",
+							"label": "1K (Standard)"
+						},
+						{
+							"value": "2K",
+							"label": "2K (High)"
+						},
+						{
+							"value": "4K",
+							"label": "4K (Ultra High)"
+						}
+					]
+				},
+				{
+					"id": "aspectRatio",
+					"type": "select",
+					"label": "Aspect Ratio",
+					"required": false,
+					"advanced": true,
+					"defaultValue": "auto",
+					"options": [
+						{
+							"value": "auto",
+							"label": "auto"
+						},
+						{
+							"value": "1:1",
+							"label": "1:1 (1K)1024x1024 (2K)2048x2048 (4K)4096x4096"
+						},
+						{
+							"value": "1:4",
+							"label": "1:4 (1K)512x2048 (2K)1024x4096 (4K)2048x8192"
+						},
+						{
+							"value": "1:8",
+							"label": "1:8 (1K)384x3072 (2K)768x6144 (4K)1536x12288"
+						},
+						{
+							"value": "2:3",
+							"label": "2:3 (1K)848x1264 (2K)1696x2528 (4K)3392x5056"
+						},
+						{
+							"value": "3:2",
+							"label": "3:2 (1K)1264x848 (2K)2528x1696 (4K)5056x3392"
+						},
+						{
+							"value": "3:4",
+							"label": "3:4 (1K)896x1200 (2K)1792x2400 (4K)3584x4800"
+						},
+						{
+							"value": "4:1",
+							"label": "4:1 (1K)2048x512 (2K)4096x1024 (4K)8192x2048"
+						},
+						{
+							"value": "4:3",
+							"label": "4:3 (1K)1200x896 (2K)2400x1792 (4K)4800x3584"
+						},
+						{
+							"value": "4:5",
+							"label": "4:5 (1K)928x1152 (2K)1856x2304 (4K)3712x4608"
+						},
+						{
+							"value": "5:4",
+							"label": "5:4 (1K)1152x928 (2K)2304x1856 (4K)4608x3712"
+						},
+						{
+							"value": "8:1",
+							"label": "8:1 (1K)3072x384 (2K)6144x768 (4K)12288x1536"
+						},
+						{
+							"value": "9:16",
+							"label": "9:16 (1K)768x1376 (2K)1536x2752 (4K)3072x5504"
+						},
+						{
+							"value": "16:9",
+							"label": "16:9 (1K)1376x768 (2K)2752x1536 (4K)5504x3072"
+						},
+						{
+							"value": "21:9",
+							"label": "21:9 (1K)1584x672 (2K)3168x1344 (4K)6336x2688"
+						}
+					]
+				},
+				{
+					"id": "outputFormat",
+					"type": "select",
+					"label": "Output Format",
+					"required": false,
+					"advanced": true,
+					"defaultValue": "jpeg",
+					"options": [
+						{
+							"value": "jpeg",
+							"label": "jpeg"
+						},
+						{
+							"value": "png",
+							"label": "png"
+						},
+						{
+							"value": "webp",
+							"label": "webp"
+						}
+					]
+				},
+				{
+					"id": "safetySetting",
+					"type": "select",
+					"label": "Safety Setting",
+					"required": false,
+					"advanced": true,
+					"defaultValue": "OFF",
+					"options": [
+						{
+							"value": "BLOCK_LOW_AND_ABOVE",
+							"label": "BLOCK_LOW_AND_ABOVE"
+						},
+						{
+							"value": "BLOCK_MEDIUM_AND_ABOVE",
+							"label": "BLOCK_MEDIUM_AND_ABOVE"
+						},
+						{
+							"value": "BLOCK_ONLY_HIGH",
+							"label": "BLOCK_ONLY_HIGH"
+						},
+						{
+							"value": "BLOCK_NONE",
+							"label": "BLOCK_NONE"
+						},
+						{
+							"value": "OFF",
+							"label": "OFF"
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "google/nano-banana-pro",
+			"name": "Nano Banana Pro",
+			"params": [
+				{
+					"id": "prompt",
+					"type": "textarea",
+					"label": "prompt",
+					"required": true,
+					"advanced": false,
+					"defaultValue": ""
+				},
+				{
+					"id": "aspectRatio",
+					"type": "select",
+					"label": "Aspect Ratio",
+					"required": false,
+					"advanced": true,
+					"defaultValue": "",
+					"options": [
+						{
+							"value": "",
+							"label": "Match Input Image"
+						},
+						{
+							"value": "1:1",
+							"label": "1:1 (1K)1024x1024 (2K)2048x2048 (4K)4096x4096"
+						},
+						{
+							"value": "2:3",
+							"label": "2:3 (1K)848x1264 (2K)1696x2528 (4K)3392x5056"
+						},
+						{
+							"value": "3:2",
+							"label": "3:2 (1K)1264x848 (2K)2528x1696 (4K)5056x3392"
+						},
+						{
+							"value": "3:4",
+							"label": "3:4 (1K)896x1200 (2K)1792x2400 (4K)3584x4800"
+						},
+						{
+							"value": "4:3",
+							"label": "4:3 (1K)1200x896 (2K)2400x1792 (4K)4800x3584"
+						},
+						{
+							"value": "4:5",
+							"label": "4:5 (1K)928x1152 (2K)1856x2304 (4K)3712x4608"
+						},
+						{
+							"value": "5:4",
+							"label": "5:4 (1K)1152x928 (2K)2304x1856 (4K)4608x3712"
+						},
+						{
+							"value": "9:16",
+							"label": "9:16 (1K)768x1376 (2K)1536x2752 (4K)3072x5504"
+						},
+						{
+							"value": "16:9",
+							"label": "16:9 (1K)1376x768 (2K)2752x1536 (4K)5504x3072"
+						},
+						{
+							"value": "21:9",
+							"label": "21:9 (1K)1584x672 (2K)3168x1344 (4K)6336x2688"
+						}
+					]
+				},
+				{
+					"id": "resolution",
+					"type": "select",
+					"label": "Resolution (K)",
+					"required": false,
+					"advanced": true,
+					"defaultValue": "1K",
+					"options": [
+						{
+							"value": "1K",
+							"label": "1K (Standard)"
+						},
+						{
+							"value": "2K",
+							"label": "2K (High)"
+						},
+						{
+							"value": "4K",
+							"label": "4K (Ultra High)"
+						}
+					]
+				},
+				{
+					"id": "safetySetting",
+					"type": "select",
+					"label": "Safety Setting",
+					"required": false,
+					"advanced": true,
+					"defaultValue": "OFF",
+					"options": [
+						{
+							"value": "BLOCK_LOW_AND_ABOVE",
+							"label": "BLOCK_LOW_AND_ABOVE"
+						},
+						{
+							"value": "BLOCK_MEDIUM_AND_ABOVE",
+							"label": "BLOCK_MEDIUM_AND_ABOVE"
+						},
+						{
+							"value": "BLOCK_ONLY_HIGH",
+							"label": "BLOCK_ONLY_HIGH"
+						},
+						{
+							"value": "BLOCK_NONE",
+							"label": "BLOCK_NONE"
+						},
+						{
+							"value": "OFF",
+							"label": "OFF"
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "openai/gpt-image-2",
+			"name": "GPT Image 2",
+			"params": [
+				{
+					"id": "prompt",
+					"type": "textarea",
+					"label": "Prompt",
+					"required": true,
+					"advanced": false,
+					"defaultValue": ""
+				},
+				{
+					"id": "resolution",
+					"type": "select",
+					"label": "Resolution",
+					"required": true,
+					"advanced": false,
+					"defaultValue": "1k",
+					"options": [
+						{
+							"value": "1k",
+							"label": "1K (~1 MP)"
+						},
+						{
+							"value": "2k",
+							"label": "2K (~2-4 MP, experimental)"
+						},
+						{
+							"value": "4k",
+							"label": "4K (~8 MP, experimental)"
+						}
+					]
+				},
+				{
+					"id": "ratio",
+					"type": "select",
+					"label": "Ratio",
+					"required": true,
+					"advanced": false,
+					"defaultValue": "1:1",
+					"options": [
+						{
+							"value": "1:1",
+							"label": "1:1 (square) — 1024x1024(1k) / 2048x2048(2k) / 2880x2880(4k)"
+						},
+						{
+							"value": "3:2",
+							"label": "3:2 (landscape) — 1536x1024(1k) / 2400x1600(2k) / 3456x2304(4k)"
+						},
+						{
+							"value": "2:3",
+							"label": "2:3 (portrait) — 1024x1536(1k) / 1600x2400(2k) / 2304x3456(4k)"
+						},
+						{
+							"value": "4:3",
+							"label": "4:3 (landscape) — 1280x960(1k) / 2048x1536(2k) / 3200x2400(4k)"
+						},
+						{
+							"value": "3:4",
+							"label": "3:4 (portrait) — 960x1280(1k) / 1536x2048(2k) / 2400x3200(4k)"
+						},
+						{
+							"value": "16:9",
+							"label": "16:9 (landscape) — 1280x720(1k) / 2048x1152(2k) / 3840x2160(4k)"
+						},
+						{
+							"value": "9:16",
+							"label": "9:16 (portrait) — 720x1280(1k) / 1152x2048(2k) / 2160x3840(4k)"
+						}
+					]
+				},
+				{
+					"id": "quality",
+					"type": "select",
+					"label": "Quality",
+					"required": true,
+					"advanced": true,
+					"defaultValue": "low",
+					"options": [
+						{
+							"value": "low",
+							"label": "Low"
+						},
+						{
+							"value": "medium",
+							"label": "Medium"
+						},
+						{
+							"value": "high",
+							"label": "High"
+						}
+					]
+				},
+				{
+					"id": "background",
+					"type": "select",
+					"label": "Background",
+					"required": false,
+					"advanced": true,
+					"defaultValue": "auto",
+					"options": [
+						{
+							"value": "auto",
+							"label": "Auto"
+						},
+						{
+							"value": "opaque",
+							"label": "Opaque"
+						}
+					]
+				},
+				{
+					"id": "outputFormat",
+					"type": "select",
+					"label": "Output Format",
+					"required": false,
+					"advanced": true,
+					"defaultValue": "png",
+					"options": [
+						{
+							"value": "png",
+							"label": "PNG"
+						},
+						{
+							"value": "jpeg",
+							"label": "JPEG"
+						},
+						{
+							"value": "webp",
+							"label": "WEBP"
+						}
+					]
+				},
+				{
+					"id": "samples",
+					"type": "number",
+					"label": "Number of Images",
+					"required": true,
+					"advanced": true,
+					"defaultValue": "1"
+				},
+				{
+					"id": "moderation",
+					"type": "select",
+					"label": "Moderation Level",
+					"required": false,
+					"advanced": true,
+					"defaultValue": "low",
+					"options": [
+						{
+							"value": "auto",
+							"label": "Auto"
+						},
+						{
+							"value": "low",
+							"label": "Low"
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "bytedance/seedream-v5-pro",
+			"name": "Seedream 5 Pro",
+			"params": [
+				{
+					"id": "prompt",
+					"type": "textarea",
+					"label": "Prompt",
+					"required": true,
+					"advanced": false,
+					"defaultValue": ""
+				},
+				{
+					"id": "resolution",
+					"type": "select",
+					"label": "Resolution",
+					"required": true,
+					"advanced": true,
+					"defaultValue": "1k",
+					"options": [
+						{
+							"value": "1k",
+							"label": "1k"
+						},
+						{
+							"value": "2k",
+							"label": "2k"
+						}
+					]
+				},
+				{
+					"id": "aspectRatio",
+					"type": "select",
+					"label": "Aspect Ratio",
+					"required": false,
+					"advanced": true,
+					"defaultValue": "auto",
+					"options": [
+						{
+							"value": "auto",
+							"label": "auto"
+						},
+						{
+							"value": "1:1",
+							"label": "1:1 (1k: 1024x1024) (2k: 2048x2048)"
+						},
+						{
+							"value": "2:3",
+							"label": "2:3 (1k: 832x1248) (2k: 1664x2496)"
+						},
+						{
+							"value": "3:2",
+							"label": "3:2 (1k: 1248x832) (2k: 2496x1664)"
+						},
+						{
+							"value": "3:4",
+							"label": "3:4 (1k: 864x1152) (2k: 1776x2368)"
+						},
+						{
+							"value": "4:3",
+							"label": "4:3 (1k: 1152x864) (2k: 2368x1776)"
+						},
+						{
+							"value": "16:9",
+							"label": "16:9 (1k: 1424x800) (2k: 2816x1584)"
+						},
+						{
+							"value": "9:16",
+							"label": "9:16 (1k: 800x1424) (2k: 1584x2816)"
+						},
+						{
+							"value": "21:9",
+							"label": "21:9 (1k: 1568x672) (2k: 3136x1344)"
+						}
+					]
+				},
+				{
+					"id": "outputFormat",
+					"type": "select",
+					"label": "Output format",
+					"required": false,
+					"advanced": true,
+					"defaultValue": "jpeg",
+					"options": [
+						{
+							"value": "jpeg",
+							"label": "jpeg"
+						},
+						{
+							"value": "png",
+							"label": "png"
+						}
+					]
+				},
+				{
+					"id": "watermark",
+					"type": "select",
+					"label": "Watermark",
+					"required": true,
+					"advanced": true,
+					"defaultValue": "false",
+					"options": [
+						{
+							"value": "false",
+							"label": "false"
+						},
+						{
+							"value": "true",
+							"label": "true"
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "black-forest-labs/flux-2-pro",
+			"name": "FLUX.2 Pro",
+			"params": [
+				{
+					"id": "prompt",
+					"type": "textarea",
+					"label": "Prompt",
+					"required": true,
+					"advanced": false,
+					"defaultValue": ""
+				},
+				{
+					"id": "outputFormat",
+					"type": "select",
+					"label": "Output Format",
+					"required": false,
+					"advanced": true,
+					"defaultValue": "png",
+					"options": [
+						{
+							"value": "jpeg",
+							"label": "JPEG"
+						},
+						{
+							"value": "png",
+							"label": "PNG"
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "wiro/flux-2-dev",
+			"name": "FLUX.2 Dev",
+			"params": [
+				{
+					"id": "prompt",
+					"type": "textarea",
+					"label": "prompt",
+					"required": true,
+					"advanced": false,
+					"defaultValue": ""
+				}
+			]
+		},
+		{
+			"slug": "xai/grok-imagine-image",
+			"name": "Grok Imagine Image",
+			"params": [
+				{
+					"id": "prompt",
+					"type": "textarea",
+					"label": "Prompt",
+					"required": true,
+					"advanced": false,
+					"defaultValue": ""
+				},
+				{
+					"id": "samples",
+					"type": "number",
+					"label": "Samples",
+					"required": true,
+					"advanced": true,
+					"defaultValue": "1"
+				},
+				{
+					"id": "aspectRatio",
+					"type": "select",
+					"label": "Aspect Ratio",
+					"required": false,
+					"advanced": true,
+					"defaultValue": "16:9",
+					"options": [
+						{
+							"value": "16:9",
+							"label": "16:9 (Landscape)"
+						},
+						{
+							"value": "9:16",
+							"label": "9:16 (Portrait)"
+						},
+						{
+							"value": "1:1",
+							"label": "1:1 (Square)"
+						},
+						{
+							"value": "4:3",
+							"label": "4:3"
+						},
+						{
+							"value": "3:4",
+							"label": "3:4"
+						},
+						{
+							"value": "3:2",
+							"label": "3:2"
+						},
+						{
+							"value": "2:3",
+							"label": "2:3"
+						},
+						{
+							"value": "2:1",
+							"label": "2:1 (Banner)"
+						},
+						{
+							"value": "1:2",
+							"label": "1:2"
+						},
+						{
+							"value": "19.5:9",
+							"label": "19.5:9 (Smartphone)"
+						},
+						{
+							"value": "9:19.5",
+							"label": "9:19.5 (Smartphone Portrait)"
+						},
+						{
+							"value": "20:9",
+							"label": "20:9 (Ultra-wide)"
+						},
+						{
+							"value": "9:20",
+							"label": "9:20 (Ultra-tall)"
+						}
+					]
+				},
+				{
+					"id": "resolution",
+					"type": "select",
+					"label": "Resolution",
+					"required": true,
+					"advanced": true,
+					"defaultValue": "1k",
+					"options": [
+						{
+							"value": "1k",
+							"label": "1K"
+						},
+						{
+							"value": "2k",
+							"label": "2K"
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "alibaba/qwen-image-3-0",
+			"name": "Qwen Image 3.0",
+			"params": [
+				{
+					"id": "prompt",
+					"type": "textarea",
+					"label": "prompt",
+					"required": true,
+					"advanced": false,
+					"defaultValue": ""
+				},
+				{
+					"id": "resolution",
+					"type": "select",
+					"label": "Resolution",
+					"required": true,
+					"advanced": false,
+					"defaultValue": "1K",
+					"options": [
+						{
+							"value": "1K",
+							"label": "1K"
+						},
+						{
+							"value": "2K",
+							"label": "2K"
+						}
+					]
+				},
+				{
+					"id": "ratio",
+					"type": "select",
+					"label": "Ratio",
+					"required": false,
+					"advanced": false,
+					"defaultValue": "auto",
+					"options": [
+						{
+							"value": "auto",
+							"label": "auto"
+						},
+						{
+							"value": "1:1",
+							"label": "1:1"
+						},
+						{
+							"value": "16:9",
+							"label": "16:9"
+						},
+						{
+							"value": "9:16",
+							"label": "9:16"
+						},
+						{
+							"value": "4:3",
+							"label": "4:3"
+						},
+						{
+							"value": "3:4",
+							"label": "3:4"
+						},
+						{
+							"value": "3:2",
+							"label": "3:2"
+						},
+						{
+							"value": "2:3",
+							"label": "2:3"
+						},
+						{
+							"value": "21:9",
+							"label": "21:9"
+						}
+					]
+				},
+				{
+					"id": "promptExtend",
+					"type": "select",
+					"label": "Prompt Extend",
+					"required": false,
+					"advanced": true,
+					"defaultValue": "false",
+					"options": [
+						{
+							"value": "true",
+							"label": "true"
+						},
+						{
+							"value": "false",
+							"label": "false"
+						}
+					]
+				},
+				{
+					"id": "promptExtendMode",
+					"type": "select",
+					"label": "Prompt Extend Mode",
+					"required": false,
+					"advanced": true,
+					"defaultValue": "direct",
+					"options": [
+						{
+							"value": "direct",
+							"label": "direct"
+						},
+						{
+							"value": "agent",
+							"label": "agent"
+						}
+					]
+				},
+				{
+					"id": "enableThinking",
+					"type": "select",
+					"label": "Thinking Mode",
+					"required": false,
+					"advanced": true,
+					"defaultValue": "true",
+					"options": [
+						{
+							"value": "true",
+							"label": "true"
+						},
+						{
+							"value": "false",
+							"label": "false"
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "pruna/p-image",
+			"name": "P-Image",
+			"params": [
+				{
+					"id": "prompt",
+					"type": "textarea",
+					"label": "prompt",
+					"required": true,
+					"advanced": false,
+					"defaultValue": ""
+				},
+				{
+					"id": "aspectRatio",
+					"type": "select",
+					"label": "Aspect Ratio",
+					"required": false,
+					"advanced": true,
+					"defaultValue": "16:9",
+					"options": [
+						{
+							"value": "16:9",
+							"label": "16:9"
+						},
+						{
+							"value": "9:16",
+							"label": "9:16"
+						},
+						{
+							"value": "3:2",
+							"label": "3:2"
+						},
+						{
+							"value": "2:3",
+							"label": "2:3"
+						},
+						{
+							"value": "4:3",
+							"label": "4:3"
+						},
+						{
+							"value": "3:4",
+							"label": "3:4"
+						},
+						{
+							"value": "1:1",
+							"label": "1:1"
+						}
+					]
+				},
+				{
+					"id": "disableSafetyChecker",
+					"type": "select",
+					"label": "Safety Checker",
+					"required": false,
+					"advanced": true,
+					"defaultValue": "false",
+					"options": [
+						{
+							"value": "true",
+							"label": "True"
+						},
+						{
+							"value": "false",
+							"label": "False"
+						}
+					]
+				}
+			]
+		}
+	],
+	"speech": [
+		{
+			"slug": "elevenlabs/eleven-v4",
+			"name": "Eleven v4",
+			"params": [
+				{
+					"id": "prompt",
+					"type": "textarea",
+					"label": "prompt",
+					"required": true,
+					"advanced": false,
+					"defaultValue": ""
+				},
+				{
+					"id": "voice",
+					"type": "select",
+					"label": "voice",
+					"required": true,
+					"advanced": false,
+					"defaultValue": "alice",
+					"options": [
+						{
+							"value": "adam",
+							"label": "Adam"
+						},
+						{
+							"value": "alice",
+							"label": "Alice"
+						},
+						{
+							"value": "bella",
+							"label": "Bella"
+						},
+						{
+							"value": "bill",
+							"label": "Bill"
+						},
+						{
+							"value": "brian",
+							"label": "Brian"
+						},
+						{
+							"value": "callum",
+							"label": "Callum"
+						},
+						{
+							"value": "charlie",
+							"label": "Charlie"
+						},
+						{
+							"value": "chris",
+							"label": "Chris"
+						},
+						{
+							"value": "daniel",
+							"label": "Daniel"
+						},
+						{
+							"value": "eric",
+							"label": "Eric"
+						},
+						{
+							"value": "george",
+							"label": "George"
+						},
+						{
+							"value": "harry",
+							"label": "Harry"
+						},
+						{
+							"value": "jessica",
+							"label": "Jessica"
+						},
+						{
+							"value": "laura",
+							"label": "Laura"
+						},
+						{
+							"value": "liam",
+							"label": "Liam"
+						},
+						{
+							"value": "lily",
+							"label": "Lily"
+						},
+						{
+							"value": "matilda",
+							"label": "Matilda"
+						},
+						{
+							"value": "river",
+							"label": "River"
+						},
+						{
+							"value": "roger",
+							"label": "Roger"
+						},
+						{
+							"value": "sarah",
+							"label": "Sarah"
+						},
+						{
+							"value": "will",
+							"label": "Will"
+						}
+					]
+				},
+				{
+					"id": "outputFormat",
+					"type": "select",
+					"label": "outputFormat",
+					"required": true,
+					"advanced": false,
+					"defaultValue": "mp3_44100_128",
+					"options": [
+						{
+							"value": "mp3_22050_32",
+							"label": "mp3_22050_32"
+						},
+						{
+							"value": "mp3_44100_32",
+							"label": "mp3_44100_32"
+						},
+						{
+							"value": "mp3_44100_64",
+							"label": "mp3_44100_64"
+						},
+						{
+							"value": "mp3_44100_96",
+							"label": "mp3_44100_96"
+						},
+						{
+							"value": "mp3_44100_128",
+							"label": "mp3_44100_128"
+						}
+					]
+				},
+				{
+					"id": "languageCode",
+					"type": "select",
+					"label": "Language",
+					"required": false,
+					"advanced": false,
+					"defaultValue": "auto",
+					"options": [
+						{
+							"value": "auto",
+							"label": "Auto"
+						},
+						{
+							"value": "af",
+							"label": "Afrikaans"
+						},
+						{
+							"value": "am",
+							"label": "Amharic"
+						},
+						{
+							"value": "ar",
+							"label": "Arabic"
+						},
+						{
+							"value": "hy",
+							"label": "Armenian"
+						},
+						{
+							"value": "as",
+							"label": "Assamese"
+						},
+						{
+							"value": "az",
+							"label": "Azerbaijani"
+						},
+						{
+							"value": "be",
+							"label": "Belarusian"
+						},
+						{
+							"value": "bn",
+							"label": "Bengali"
+						},
+						{
+							"value": "bs",
+							"label": "Bosnian"
+						},
+						{
+							"value": "bg",
+							"label": "Bulgarian"
+						},
+						{
+							"value": "my",
+							"label": "Burmese"
+						},
+						{
+							"value": "ca",
+							"label": "Catalan"
+						},
+						{
+							"value": "zh",
+							"label": "Chinese (Mandarin)"
+						},
+						{
+							"value": "hr",
+							"label": "Croatian"
+						},
+						{
+							"value": "cs",
+							"label": "Czech"
+						},
+						{
+							"value": "da",
+							"label": "Danish"
+						},
+						{
+							"value": "nl",
+							"label": "Dutch"
+						},
+						{
+							"value": "en",
+							"label": "English"
+						},
+						{
+							"value": "et",
+							"label": "Estonian"
+						},
+						{
+							"value": "fi",
+							"label": "Finnish"
+						},
+						{
+							"value": "fr",
+							"label": "French"
+						},
+						{
+							"value": "ff",
+							"label": "Fula"
+						},
+						{
+							"value": "gl",
+							"label": "Galician"
+						},
+						{
+							"value": "ka",
+							"label": "Georgian"
+						},
+						{
+							"value": "de",
+							"label": "German"
+						},
+						{
+							"value": "el",
+							"label": "Greek"
+						},
+						{
+							"value": "gu",
+							"label": "Gujarati"
+						},
+						{
+							"value": "ha",
+							"label": "Hausa"
+						},
+						{
+							"value": "he",
+							"label": "Hebrew"
+						},
+						{
+							"value": "hi",
+							"label": "Hindi"
+						},
+						{
+							"value": "hu",
+							"label": "Hungarian"
+						},
+						{
+							"value": "is",
+							"label": "Icelandic"
+						},
+						{
+							"value": "id",
+							"label": "Indonesian"
+						},
+						{
+							"value": "it",
+							"label": "Italian"
+						},
+						{
+							"value": "ja",
+							"label": "Japanese"
+						},
+						{
+							"value": "jv",
+							"label": "Javanese"
+						},
+						{
+							"value": "kn",
+							"label": "Kannada"
+						},
+						{
+							"value": "kk",
+							"label": "Kazakh"
+						},
+						{
+							"value": "ko",
+							"label": "Korean"
+						},
+						{
+							"value": "ky",
+							"label": "Kyrgyz"
+						},
+						{
+							"value": "lo",
+							"label": "Lao"
+						},
+						{
+							"value": "lv",
+							"label": "Latvian"
+						},
+						{
+							"value": "ln",
+							"label": "Lingala"
+						},
+						{
+							"value": "lt",
+							"label": "Lithuanian"
+						},
+						{
+							"value": "lg",
+							"label": "Luganda"
+						},
+						{
+							"value": "lb",
+							"label": "Luxembourgish"
+						},
+						{
+							"value": "mk",
+							"label": "Macedonian"
+						},
+						{
+							"value": "ms",
+							"label": "Malay"
+						},
+						{
+							"value": "ml",
+							"label": "Malayalam"
+						},
+						{
+							"value": "mt",
+							"label": "Maltese"
+						},
+						{
+							"value": "mi",
+							"label": "Maori"
+						},
+						{
+							"value": "mr",
+							"label": "Marathi"
+						},
+						{
+							"value": "mn",
+							"label": "Mongolian"
+						},
+						{
+							"value": "ne",
+							"label": "Nepali"
+						},
+						{
+							"value": "no",
+							"label": "Norwegian"
+						},
+						{
+							"value": "oc",
+							"label": "Occitan"
+						},
+						{
+							"value": "or",
+							"label": "Odia"
+						},
+						{
+							"value": "ps",
+							"label": "Pashto"
+						},
+						{
+							"value": "fa",
+							"label": "Persian"
+						},
+						{
+							"value": "pl",
+							"label": "Polish"
+						},
+						{
+							"value": "pt",
+							"label": "Portuguese"
+						},
+						{
+							"value": "pa",
+							"label": "Punjabi"
+						},
+						{
+							"value": "ro",
+							"label": "Romanian"
+						},
+						{
+							"value": "ru",
+							"label": "Russian"
+						},
+						{
+							"value": "sr",
+							"label": "Serbian"
+						},
+						{
+							"value": "sn",
+							"label": "Shona"
+						},
+						{
+							"value": "sd",
+							"label": "Sindhi"
+						},
+						{
+							"value": "sk",
+							"label": "Slovak"
+						},
+						{
+							"value": "sl",
+							"label": "Slovenian"
+						},
+						{
+							"value": "so",
+							"label": "Somali"
+						},
+						{
+							"value": "es",
+							"label": "Spanish"
+						},
+						{
+							"value": "sw",
+							"label": "Swahili"
+						},
+						{
+							"value": "sv",
+							"label": "Swedish"
+						},
+						{
+							"value": "tg",
+							"label": "Tajik"
+						},
+						{
+							"value": "ta",
+							"label": "Tamil"
+						},
+						{
+							"value": "te",
+							"label": "Telugu"
+						},
+						{
+							"value": "th",
+							"label": "Thai"
+						},
+						{
+							"value": "tr",
+							"label": "Turkish"
+						},
+						{
+							"value": "uk",
+							"label": "Ukrainian"
+						},
+						{
+							"value": "ur",
+							"label": "Urdu"
+						},
+						{
+							"value": "uz",
+							"label": "Uzbek"
+						},
+						{
+							"value": "vi",
+							"label": "Vietnamese"
+						},
+						{
+							"value": "cy",
+							"label": "Welsh"
+						},
+						{
+							"value": "wo",
+							"label": "Wolof"
+						},
+						{
+							"value": "zu",
+							"label": "Zulu"
+						}
+					]
+				},
+				{
+					"id": "timestamps",
+					"type": "select",
+					"label": "Timestamps",
+					"required": false,
+					"advanced": false,
+					"defaultValue": "false",
+					"options": [
+						{
+							"value": "false",
+							"label": "False"
+						},
+						{
+							"value": "true",
+							"label": "True"
+						}
+					]
+				},
+				{
+					"id": "applyTextNormalization",
+					"type": "select",
+					"label": "Text Normalization",
+					"required": false,
+					"advanced": true,
+					"defaultValue": "auto",
+					"options": [
+						{
+							"value": "auto",
+							"label": "Auto"
+						},
+						{
+							"value": "on",
+							"label": "On"
+						},
+						{
+							"value": "off",
+							"label": "Off"
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "elevenlabs/eleven-v4-turbo",
+			"name": "Eleven v4 Turbo",
+			"params": [
+				{
+					"id": "prompt",
+					"type": "textarea",
+					"label": "prompt",
+					"required": true,
+					"advanced": false,
+					"defaultValue": ""
+				},
+				{
+					"id": "voice",
+					"type": "select",
+					"label": "voice",
+					"required": true,
+					"advanced": false,
+					"defaultValue": "alice",
+					"options": [
+						{
+							"value": "adam",
+							"label": "Adam"
+						},
+						{
+							"value": "alice",
+							"label": "Alice"
+						},
+						{
+							"value": "bella",
+							"label": "Bella"
+						},
+						{
+							"value": "bill",
+							"label": "Bill"
+						},
+						{
+							"value": "brian",
+							"label": "Brian"
+						},
+						{
+							"value": "callum",
+							"label": "Callum"
+						},
+						{
+							"value": "charlie",
+							"label": "Charlie"
+						},
+						{
+							"value": "chris",
+							"label": "Chris"
+						},
+						{
+							"value": "daniel",
+							"label": "Daniel"
+						},
+						{
+							"value": "eric",
+							"label": "Eric"
+						},
+						{
+							"value": "george",
+							"label": "George"
+						},
+						{
+							"value": "harry",
+							"label": "Harry"
+						},
+						{
+							"value": "jessica",
+							"label": "Jessica"
+						},
+						{
+							"value": "laura",
+							"label": "Laura"
+						},
+						{
+							"value": "liam",
+							"label": "Liam"
+						},
+						{
+							"value": "lily",
+							"label": "Lily"
+						},
+						{
+							"value": "matilda",
+							"label": "Matilda"
+						},
+						{
+							"value": "river",
+							"label": "River"
+						},
+						{
+							"value": "roger",
+							"label": "Roger"
+						},
+						{
+							"value": "sarah",
+							"label": "Sarah"
+						},
+						{
+							"value": "will",
+							"label": "Will"
+						}
+					]
+				},
+				{
+					"id": "outputFormat",
+					"type": "select",
+					"label": "outputFormat",
+					"required": true,
+					"advanced": false,
+					"defaultValue": "mp3_44100_128",
+					"options": [
+						{
+							"value": "mp3_22050_32",
+							"label": "mp3_22050_32"
+						},
+						{
+							"value": "mp3_44100_32",
+							"label": "mp3_44100_32"
+						},
+						{
+							"value": "mp3_44100_64",
+							"label": "mp3_44100_64"
+						},
+						{
+							"value": "mp3_44100_96",
+							"label": "mp3_44100_96"
+						},
+						{
+							"value": "mp3_44100_128",
+							"label": "mp3_44100_128"
+						}
+					]
+				},
+				{
+					"id": "languageCode",
+					"type": "select",
+					"label": "Language",
+					"required": false,
+					"advanced": false,
+					"defaultValue": "auto",
+					"options": [
+						{
+							"value": "auto",
+							"label": "Auto"
+						},
+						{
+							"value": "af",
+							"label": "Afrikaans"
+						},
+						{
+							"value": "am",
+							"label": "Amharic"
+						},
+						{
+							"value": "ar",
+							"label": "Arabic"
+						},
+						{
+							"value": "hy",
+							"label": "Armenian"
+						},
+						{
+							"value": "as",
+							"label": "Assamese"
+						},
+						{
+							"value": "az",
+							"label": "Azerbaijani"
+						},
+						{
+							"value": "be",
+							"label": "Belarusian"
+						},
+						{
+							"value": "bn",
+							"label": "Bengali"
+						},
+						{
+							"value": "bs",
+							"label": "Bosnian"
+						},
+						{
+							"value": "bg",
+							"label": "Bulgarian"
+						},
+						{
+							"value": "my",
+							"label": "Burmese"
+						},
+						{
+							"value": "ca",
+							"label": "Catalan"
+						},
+						{
+							"value": "zh",
+							"label": "Chinese (Mandarin)"
+						},
+						{
+							"value": "hr",
+							"label": "Croatian"
+						},
+						{
+							"value": "cs",
+							"label": "Czech"
+						},
+						{
+							"value": "da",
+							"label": "Danish"
+						},
+						{
+							"value": "nl",
+							"label": "Dutch"
+						},
+						{
+							"value": "en",
+							"label": "English"
+						},
+						{
+							"value": "et",
+							"label": "Estonian"
+						},
+						{
+							"value": "fi",
+							"label": "Finnish"
+						},
+						{
+							"value": "fr",
+							"label": "French"
+						},
+						{
+							"value": "ff",
+							"label": "Fula"
+						},
+						{
+							"value": "gl",
+							"label": "Galician"
+						},
+						{
+							"value": "ka",
+							"label": "Georgian"
+						},
+						{
+							"value": "de",
+							"label": "German"
+						},
+						{
+							"value": "el",
+							"label": "Greek"
+						},
+						{
+							"value": "gu",
+							"label": "Gujarati"
+						},
+						{
+							"value": "ha",
+							"label": "Hausa"
+						},
+						{
+							"value": "he",
+							"label": "Hebrew"
+						},
+						{
+							"value": "hi",
+							"label": "Hindi"
+						},
+						{
+							"value": "hu",
+							"label": "Hungarian"
+						},
+						{
+							"value": "is",
+							"label": "Icelandic"
+						},
+						{
+							"value": "id",
+							"label": "Indonesian"
+						},
+						{
+							"value": "it",
+							"label": "Italian"
+						},
+						{
+							"value": "ja",
+							"label": "Japanese"
+						},
+						{
+							"value": "jv",
+							"label": "Javanese"
+						},
+						{
+							"value": "kn",
+							"label": "Kannada"
+						},
+						{
+							"value": "kk",
+							"label": "Kazakh"
+						},
+						{
+							"value": "ko",
+							"label": "Korean"
+						},
+						{
+							"value": "ky",
+							"label": "Kyrgyz"
+						},
+						{
+							"value": "lo",
+							"label": "Lao"
+						},
+						{
+							"value": "lv",
+							"label": "Latvian"
+						},
+						{
+							"value": "ln",
+							"label": "Lingala"
+						},
+						{
+							"value": "lt",
+							"label": "Lithuanian"
+						},
+						{
+							"value": "lg",
+							"label": "Luganda"
+						},
+						{
+							"value": "lb",
+							"label": "Luxembourgish"
+						},
+						{
+							"value": "mk",
+							"label": "Macedonian"
+						},
+						{
+							"value": "ms",
+							"label": "Malay"
+						},
+						{
+							"value": "ml",
+							"label": "Malayalam"
+						},
+						{
+							"value": "mt",
+							"label": "Maltese"
+						},
+						{
+							"value": "mi",
+							"label": "Maori"
+						},
+						{
+							"value": "mr",
+							"label": "Marathi"
+						},
+						{
+							"value": "mn",
+							"label": "Mongolian"
+						},
+						{
+							"value": "ne",
+							"label": "Nepali"
+						},
+						{
+							"value": "no",
+							"label": "Norwegian"
+						},
+						{
+							"value": "oc",
+							"label": "Occitan"
+						},
+						{
+							"value": "or",
+							"label": "Odia"
+						},
+						{
+							"value": "ps",
+							"label": "Pashto"
+						},
+						{
+							"value": "fa",
+							"label": "Persian"
+						},
+						{
+							"value": "pl",
+							"label": "Polish"
+						},
+						{
+							"value": "pt",
+							"label": "Portuguese"
+						},
+						{
+							"value": "pa",
+							"label": "Punjabi"
+						},
+						{
+							"value": "ro",
+							"label": "Romanian"
+						},
+						{
+							"value": "ru",
+							"label": "Russian"
+						},
+						{
+							"value": "sr",
+							"label": "Serbian"
+						},
+						{
+							"value": "sn",
+							"label": "Shona"
+						},
+						{
+							"value": "sd",
+							"label": "Sindhi"
+						},
+						{
+							"value": "sk",
+							"label": "Slovak"
+						},
+						{
+							"value": "sl",
+							"label": "Slovenian"
+						},
+						{
+							"value": "so",
+							"label": "Somali"
+						},
+						{
+							"value": "es",
+							"label": "Spanish"
+						},
+						{
+							"value": "sw",
+							"label": "Swahili"
+						},
+						{
+							"value": "sv",
+							"label": "Swedish"
+						},
+						{
+							"value": "tg",
+							"label": "Tajik"
+						},
+						{
+							"value": "ta",
+							"label": "Tamil"
+						},
+						{
+							"value": "te",
+							"label": "Telugu"
+						},
+						{
+							"value": "th",
+							"label": "Thai"
+						},
+						{
+							"value": "tr",
+							"label": "Turkish"
+						},
+						{
+							"value": "uk",
+							"label": "Ukrainian"
+						},
+						{
+							"value": "ur",
+							"label": "Urdu"
+						},
+						{
+							"value": "uz",
+							"label": "Uzbek"
+						},
+						{
+							"value": "vi",
+							"label": "Vietnamese"
+						},
+						{
+							"value": "cy",
+							"label": "Welsh"
+						},
+						{
+							"value": "wo",
+							"label": "Wolof"
+						},
+						{
+							"value": "zu",
+							"label": "Zulu"
+						}
+					]
+				},
+				{
+					"id": "timestamps",
+					"type": "select",
+					"label": "Timestamps",
+					"required": false,
+					"advanced": false,
+					"defaultValue": "false",
+					"options": [
+						{
+							"value": "false",
+							"label": "False"
+						},
+						{
+							"value": "true",
+							"label": "True"
+						}
+					]
+				},
+				{
+					"id": "applyTextNormalization",
+					"type": "select",
+					"label": "Text Normalization",
+					"required": false,
+					"advanced": true,
+					"defaultValue": "auto",
+					"options": [
+						{
+							"value": "auto",
+							"label": "Auto"
+						},
+						{
+							"value": "on",
+							"label": "On"
+						},
+						{
+							"value": "off",
+							"label": "Off"
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "google/gemini-3-1-tts",
+			"name": "Gemini 3.1 Flash TTS",
+			"params": [
+				{
+					"id": "prompt",
+					"type": "textarea",
+					"label": "prompt",
+					"required": true,
+					"advanced": false,
+					"defaultValue": ""
+				},
+				{
+					"id": "voice",
+					"type": "select",
+					"label": "Voice",
+					"required": true,
+					"advanced": false,
+					"defaultValue": "fenrir",
+					"options": [
+						{
+							"value": "achernar",
+							"label": "Achernar Female"
+						},
+						{
+							"value": "achird",
+							"label": "Achird Male"
+						},
+						{
+							"value": "algenib",
+							"label": "Algenib Male"
+						},
+						{
+							"value": "algieba",
+							"label": "Algieba Male"
+						},
+						{
+							"value": "alnilam",
+							"label": "Alnilam Male"
+						},
+						{
+							"value": "aoede",
+							"label": "Aoede Female"
+						},
+						{
+							"value": "autonoe",
+							"label": "Autonoe Female"
+						},
+						{
+							"value": "callirrhoe",
+							"label": "Callirrhoe Female"
+						},
+						{
+							"value": "charon",
+							"label": "Charon Male"
+						},
+						{
+							"value": "despina",
+							"label": "Despina Female"
+						},
+						{
+							"value": "enceladus",
+							"label": "Enceladus Male"
+						},
+						{
+							"value": "erinome",
+							"label": "Erinome Female"
+						},
+						{
+							"value": "fenrir",
+							"label": "Fenrir Male"
+						},
+						{
+							"value": "gacrux",
+							"label": "Gacrux Female"
+						},
+						{
+							"value": "iapetus",
+							"label": "Iapetus Male"
+						},
+						{
+							"value": "kore",
+							"label": "Kore Female"
+						},
+						{
+							"value": "laomedeia",
+							"label": "Laomedeia Female"
+						},
+						{
+							"value": "leda",
+							"label": "Leda Female"
+						},
+						{
+							"value": "orus",
+							"label": "Orus Male"
+						},
+						{
+							"value": "pulcherrima",
+							"label": "Pulcherrima Female"
+						},
+						{
+							"value": "puck",
+							"label": "Puck Male"
+						},
+						{
+							"value": "rasalgethi",
+							"label": "Rasalgethi Male"
+						},
+						{
+							"value": "sadachbia",
+							"label": "Sadachbia Male"
+						},
+						{
+							"value": "sadaltager",
+							"label": "Sadaltager Male"
+						},
+						{
+							"value": "schedar",
+							"label": "Schedar Male"
+						},
+						{
+							"value": "sulafat",
+							"label": "Sulafat Female"
+						},
+						{
+							"value": "umbriel",
+							"label": "Umbriel Male"
+						},
+						{
+							"value": "vindemiatrix",
+							"label": "Vindemiatrix Female"
+						},
+						{
+							"value": "zephyr",
+							"label": "Zephyr Female"
+						},
+						{
+							"value": "zubenelgenubi",
+							"label": "Zubenelgenubi Male"
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "google/gemini-2-5-tts",
+			"name": "Gemini 2.5 TTS",
+			"params": [
+				{
+					"id": "prompt",
+					"type": "textarea",
+					"label": "prompt",
+					"required": true,
+					"advanced": false,
+					"defaultValue": ""
+				},
+				{
+					"id": "voice",
+					"type": "select",
+					"label": "Voice",
+					"required": true,
+					"advanced": false,
+					"defaultValue": "Achernar",
+					"options": [
+						{
+							"value": "Achernar",
+							"label": "Achernar Female"
+						},
+						{
+							"value": "Achird",
+							"label": "Achird Male"
+						},
+						{
+							"value": "Algenib",
+							"label": "Algenib Male"
+						},
+						{
+							"value": "Algieba",
+							"label": "Algieba Male"
+						},
+						{
+							"value": "Alnilam",
+							"label": "Alnilam Male"
+						},
+						{
+							"value": "Aoede",
+							"label": "Aoede Female"
+						},
+						{
+							"value": "Autonoe",
+							"label": "Autonoe Female"
+						},
+						{
+							"value": "Callirrhoe",
+							"label": "Callirrhoe Female"
+						},
+						{
+							"value": "Charon",
+							"label": "Charon Male"
+						},
+						{
+							"value": "Despina",
+							"label": "Despina Female"
+						},
+						{
+							"value": "Enceladus",
+							"label": "Enceladus Male"
+						},
+						{
+							"value": "Erinome",
+							"label": "Erinome Female"
+						},
+						{
+							"value": "Fenrir",
+							"label": "Fenrir Male"
+						},
+						{
+							"value": "Gacrux",
+							"label": "Gacrux Female"
+						},
+						{
+							"value": "Iapetus",
+							"label": "Iapetus Male"
+						},
+						{
+							"value": "Kore",
+							"label": "Kore Female"
+						},
+						{
+							"value": "Laomedeia",
+							"label": "Laomedeia Female"
+						},
+						{
+							"value": "Leda",
+							"label": "Leda Female"
+						},
+						{
+							"value": "Orus",
+							"label": "Orus Male"
+						},
+						{
+							"value": "Pulcherrima",
+							"label": "Pulcherrima Female"
+						},
+						{
+							"value": "Puck",
+							"label": "Puck Male"
+						},
+						{
+							"value": "Rasalgethi",
+							"label": "Rasalgethi Male"
+						},
+						{
+							"value": "Sadachbia",
+							"label": "Sadachbia Male"
+						},
+						{
+							"value": "Sadaltager",
+							"label": "Sadaltager Male"
+						},
+						{
+							"value": "Schedar",
+							"label": "Schedar Male"
+						},
+						{
+							"value": "Sulafat",
+							"label": "Sulafat Female"
+						},
+						{
+							"value": "Umbriel",
+							"label": "Umbriel Male"
+						},
+						{
+							"value": "Vindemiatrix",
+							"label": "Vindemiatrix Female"
+						},
+						{
+							"value": "Zephyr",
+							"label": "Zephyr Female"
+						},
+						{
+							"value": "Zubenelgenubi",
+							"label": "Zubenelgenubi Male"
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "xiaomimimo/mimo-2-5-tts",
+			"name": "MiMo 2.5 TTS",
+			"params": [
+				{
+					"id": "prompt",
+					"type": "textarea",
+					"label": "prompt",
+					"required": true,
+					"advanced": false,
+					"defaultValue": ""
+				},
+				{
+					"id": "voice",
+					"type": "select",
+					"label": "Voice",
+					"required": false,
+					"advanced": false,
+					"defaultValue": "Mia",
+					"options": [
+						{
+							"value": "Mia",
+							"label": "Mia (English, female)"
+						},
+						{
+							"value": "Chloe",
+							"label": "Chloe (English, female)"
+						},
+						{
+							"value": "Milo",
+							"label": "Milo (English, male)"
+						},
+						{
+							"value": "Dean",
+							"label": "Dean (English, male)"
+						},
+						{
+							"value": "冰糖",
+							"label": "Bingtang (Chinese, female)"
+						},
+						{
+							"value": "茉莉",
+							"label": "Moli (Chinese, female)"
+						},
+						{
+							"value": "苏打",
+							"label": "Suda (Chinese, male)"
+						},
+						{
+							"value": "白桦",
+							"label": "Baihua (Chinese, male)"
+						}
+					]
+				},
+				{
+					"id": "outputFormat",
+					"type": "select",
+					"label": "Output Format",
+					"required": false,
+					"advanced": false,
+					"defaultValue": "mp3",
+					"options": [
+						{
+							"value": "mp3",
+							"label": "mp3"
+						},
+						{
+							"value": "wav",
+							"label": "wav"
+						}
+					]
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,55 @@
+{
+	"name": "wiro-obsidian",
+	"version": "1.0.0",
+	"private": true,
+	"description": "Generate images and speech in your Obsidian notes with Wiro AI models.",
+	"main": "main.js",
+	"type": "module",
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc --noEmit && node esbuild.config.mjs production",
+		"lint": "eslint .",
+		"test": "node --import tsx --import ./tests/setup.ts --test tests/*.test.ts",
+		"models": "node scripts/update-models.mjs",
+		"version": "node version-bump.mjs && git add manifest.json versions.json"
+	},
+	"keywords": [
+		"obsidian",
+		"obsidian-plugin",
+		"wiro",
+		"text-to-image",
+		"text-to-speech"
+	],
+	"author": "Wiro AI",
+	"license": "MIT",
+	"homepage": "https://wiro.ai",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/wiroai/Wiro-Obsidian.git"
+	},
+	"bugs": {
+		"url": "https://github.com/wiroai/Wiro-Obsidian/issues"
+	},
+	"engines": {
+		"node": ">=22"
+	},
+	"devDependencies": {
+		"@types/node": "^22.20.5",
+		"esbuild": "^0.28.2",
+		"eslint": "^9.39.5",
+		"eslint-plugin-obsidianmd": "^0.5.1",
+		"globals": "^17.14.0",
+		"obsidian": "^1.14.4",
+		"tsx": "^4.23.15",
+		"typescript": "~6.0.3",
+		"typescript-eslint": "^8.72.2"
+	},
+	"overrides": {
+		"@typescript-eslint/typescript-estree": {
+			"minimatch": "^11.0.8"
+		},
+		"eslint-plugin-n": {
+			"minimatch": "^11.0.8"
+		}
+	}
+}

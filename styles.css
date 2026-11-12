@@ -1,0 +1,34 @@
+/* Progress notice shown while a Wiro AI task runs. */
+.wiro-progress {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-3);
+}
+
+.wiro-progress-text {
+	flex: 1;
+	min-width: 0;
+}
+
+.wiro-progress-status {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	margin-top: var(--size-2-1);
+}
+
+.wiro-progress-cancel {
+	flex-shrink: 0;
+}
+
+/* Prompt dialog. */
+.wiro-prompt-input {
+	width: 100%;
+	min-height: 8em;
+	resize: vertical;
+}
+
+.wiro-prompt-note {
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+	margin-top: var(--size-4-2);
+}

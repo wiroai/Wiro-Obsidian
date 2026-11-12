@@ -1,0 +1,19 @@
+# npm
+node_modules
+
+# The bundled main.js is built in CI and attached to each GitHub release.
+main.js
+*.map
+
+# Obsidian writes the plugin settings here when the repo sits in a vault.
+data.json
+
+# Local tooling
+.claude/
+.env
+.env.*
+.vscode/
+.idea/
+*.iml
+.DS_Store
+test-vault/

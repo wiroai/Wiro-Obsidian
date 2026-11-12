@@ -25,6 +25,8 @@ export function phaseOf(status: string): TaskPhase {
 export interface FinishedTask {
 	taskId: string;
 	outputs: TaskOutput[];
+	/** The merged text of an LLM or speech-to-text answer, when the model returns text. */
+	debugOutput: string;
 	totalCost: string;
 	elapsedSeconds: string;
 }
@@ -177,6 +179,7 @@ export async function runTask(
 			return {
 				taskId: state.id || started.taskId,
 				outputs: state.outputs,
+				debugOutput: state.debugOutput,
 				totalCost: state.totalCost,
 				elapsedSeconds: state.elapsedSeconds,
 			};

@@ -1,3 +1,5 @@
+import type { PriceRow } from './pricing';
+
 /** One choice of a select parameter. */
 export interface ParamOption {
 	value: string;
@@ -13,17 +15,34 @@ export interface ParamDef {
 	advanced: boolean;
 	defaultValue: string;
 	options?: ParamOption[];
+	note?: string;
+	placeholder?: string;
+	min?: number;
+	max?: number;
+	step?: number;
+}
+
+/** What a model costs, from its Tool/Detail row (https://wiro.ai/docs/pricing). */
+export interface ModelPricing {
+	rows: PriceRow[];
+	/** The caller's discount on this model, in percent. */
+	discountPercent?: number;
+	/** What past runs cost on average, for models billed by run time. */
+	estimatedUsd?: number;
 }
 
 /** The parameters of one model, by its `owner/project` slug. */
 export interface ModelSchema {
 	slug: string;
+	title?: string;
+	categories?: string[];
 	params: ParamDef[];
+	pricing?: ModelPricing;
 }
 
 export type ParamValue = string | number | boolean;
 
-const FILE_TYPES = new Set(['fileinput', 'multifileinput', 'multifileinputdrop', 'combinefileinput']);
+export const FILE_TYPES = new Set(['fileinput', 'multifileinput', 'multifileinputdrop', 'combinefileinput']);
 const TEXT_TYPES = new Set(['textarea', 'text']);
 const NUMBER_TYPES = new Set(['number', 'float', 'range']);
 
@@ -54,6 +73,49 @@ function asString(value: unknown): string {
 	if (typeof value === 'string') return value;
 	if (typeof value === 'number' || typeof value === 'boolean') return String(value);
 	return '';
+}
+
+function asNumber(value: unknown): number | undefined {
+	if (value === '' || value === null || value === undefined) return undefined;
+	const number = Number(value);
+	return Number.isFinite(number) ? number : undefined;
+}
+
+/** Price rows from `dynamicprice`, which Tool/List sends as a JSON string and Tool/Detail as an array. */
+export function parsePriceRows(value: unknown): PriceRow[] {
+	let rows: unknown = value;
+	if (typeof rows === 'string') {
+		try {
+			rows = JSON.parse(rows);
+		} catch {
+			return [];
+		}
+	}
+	if (!Array.isArray(rows)) return [];
+	const result: PriceRow[] = [];
+	for (const row of rows as unknown[]) {
+		if (!isRecord(row) || typeof row.priceMethod !== 'string') continue;
+		const price = asNumber(row.price) ?? 0;
+		const entry: PriceRow = { price, priceMethod: row.priceMethod };
+		if (isRecord(row.inputs)) entry.inputs = row.inputs;
+		if (typeof row.note === 'string' && row.note.trim()) entry.note = row.note.trim();
+		const extra = asNumber(row.priceExtra);
+		if (extra !== undefined) entry.priceExtra = extra;
+		const input = asNumber(row.priceInput);
+		if (input !== undefined) entry.priceInput = input;
+		result.push(entry);
+	}
+	return result;
+}
+
+/** The pricing fields of a Tool/List or Tool/Detail row. */
+export function parsePricing(tool: Record<string, unknown>): ModelPricing {
+	const pricing: ModelPricing = { rows: parsePriceRows(tool.dynamicprice) };
+	const discount = asNumber(isRecord(tool.discount) ? tool.discount.percent : tool.discount);
+	if (discount !== undefined && discount > 0) pricing.discountPercent = discount;
+	const estimate = asNumber(tool.approximatelycost);
+	if (estimate !== undefined && estimate > 0) pricing.estimatedUsd = estimate;
+	return pricing;
 }
 
 /**
@@ -91,10 +153,28 @@ export function parseToolDetail(slug: string, data: unknown): ModelSchema | null
 				}
 				if (options.length > 0) param.options = options;
 			}
+			const note = asString(item.note).trim();
+			if (note) param.note = note;
+			const placeholder = asString(item.placeholder).trim();
+			if (placeholder && placeholder !== id && placeholder !== param.label) param.placeholder = placeholder;
+			const min = asNumber(item.minvalue);
+			if (min !== undefined) param.min = min;
+			const max = asNumber(item.maxvalue);
+			if (max !== undefined) param.max = max;
+			const step = asNumber(item.incrementby);
+			if (step !== undefined && step > 0) param.step = step;
 			params.push(param);
 		}
 	}
-	return { slug, params };
+	const schema: ModelSchema = { slug, params, pricing: parsePricing(tool) };
+	const title = asString(tool.title).trim();
+	if (title) schema.title = title;
+	if (Array.isArray(tool.categories)) schema.categories = (tool.categories as unknown[]).map(asString).filter(Boolean);
+	return schema;
+}
+
+export function isFileParam(param: ParamDef): boolean {
+	return FILE_TYPES.has(param.type);
 }
 
 /** The parameter that takes the prompt or the text to speak. */
@@ -159,28 +239,67 @@ export function sentenceCaseLabel(label: string): string {
 }
 
 /**
- * Builds the Run request body: required defaults, then the saved options
- * (only values the model still offers), then the extra parameters, then the
- * prompt or text.
+ * How uploaded file URLs go into a run: one URL for `fileinput`, a list for
+ * `combinefileinput`, and comma-separated in the `...UrlMultiple` field for
+ * `multifileinput` (https://wiro.ai/docs/model-parameters).
  */
+export function fileValues(param: ParamDef, urls: string[]): Record<string, unknown> {
+	if (urls.length === 0) return {};
+	if (param.type === 'combinefileinput') return { [param.id]: urls };
+	if (param.type === 'multifileinput' || param.type === 'multifileinputdrop') {
+		return { [`${param.id.replace('Multiple', '')}UrlMultiple`]: urls.join(',') };
+	}
+	return { [param.id]: urls[0] };
+}
+
+export interface RunInput {
+	/** The prompt or text for the model's text parameter; null for models without one. */
+	text: string | null;
+	/** Saved select options, applied when the model still offers the value. */
+	options?: Record<string, string>;
+	/** The "Extra parameters" JSON object. */
+	extra?: Record<string, unknown>;
+	/** Values typed in a form, by parameter id. They win over the options. */
+	values?: Record<string, unknown>;
+	/** Uploaded file URLs, by parameter id. */
+	files?: Record<string, string[]>;
+}
+
+/**
+ * Builds the Run request body: required defaults, then the saved options
+ * (only values the model still offers), the form values, the extra
+ * parameters, the files and the prompt or text.
+ */
+export function composeRunParams(schema: ModelSchema | null, input: RunInput): Record<string, unknown> {
+	const params: Record<string, unknown> = schema ? { ...requiredDefaults(schema) } : {};
+	if (schema && input.options) {
+		for (const param of optionParams(schema)) {
+			const value = input.options[param.id];
+			if (value !== undefined && param.options?.some((option) => option.value === value)) {
+				params[param.id] = value;
+			}
+		}
+	}
+	for (const [key, value] of Object.entries(input.values ?? {})) {
+		if (value !== undefined && value !== '') params[key] = value;
+	}
+	Object.assign(params, input.extra ?? {});
+	for (const [id, urls] of Object.entries(input.files ?? {})) {
+		const param = schema?.params.find((entry) => entry.id === id);
+		Object.assign(params, param ? fileValues(param, urls) : { [id]: urls.length === 1 ? urls[0] : urls });
+	}
+	if (input.text !== null) params[textParamId(schema)] = input.text;
+	return params;
+}
+
+/** The Run body for a prompt or text, with saved options and extra parameters. */
 export function buildRunParams(
 	schema: ModelSchema | null,
 	text: string,
 	options: Record<string, string>,
 	extra: Record<string, unknown>,
 ): Record<string, unknown> {
-	const params: Record<string, unknown> = schema ? { ...requiredDefaults(schema) } : {};
-	if (schema) {
-		for (const param of optionParams(schema)) {
-			const value = options[param.id];
-			if (value !== undefined && param.options?.some((option) => option.value === value)) {
-				params[param.id] = value;
-			}
-		}
-	}
-	Object.assign(params, extra);
-	params[textParamId(schema)] = text;
-	return params;
+	return composeRunParams(schema, { text, options, extra });
 }
 
 /**

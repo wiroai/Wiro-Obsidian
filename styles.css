@@ -20,15 +20,228 @@
 	flex-shrink: 0;
 }
 
-/* Prompt dialog. */
-.wiro-prompt-input {
+/* Run dialog and forms. */
+.wiro-prompt-input,
+.wiro-question-input {
 	width: 100%;
 	min-height: 8em;
 	resize: vertical;
+}
+
+.wiro-question-input {
+	min-height: 4em;
 }
 
 .wiro-prompt-note {
 	color: var(--text-muted);
 	font-size: var(--font-ui-small);
 	margin-top: var(--size-4-2);
+}
+
+.wiro-dialog-preview {
+	margin-bottom: var(--size-4-3);
+	text-align: center;
+}
+
+.wiro-dialog-preview img {
+	max-width: 100%;
+	max-height: 260px;
+	border-radius: var(--radius-m);
+}
+
+.wiro-dialog-preview audio {
+	width: 100%;
+}
+
+.wiro-dialog-caption {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	margin-top: var(--size-2-2);
+}
+
+.wiro-dialog-options {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--size-4-2) var(--size-4-4);
+	margin-top: var(--size-4-3);
+}
+
+.wiro-dialog-option {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-2);
+}
+
+.wiro-dialog-option-label {
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+}
+
+.wiro-dialog-footer {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: var(--size-4-4);
+	margin-top: var(--size-4-3);
+}
+
+.wiro-dialog-info {
+	flex: 1;
+	min-width: 0;
+}
+
+.wiro-dialog-price {
+	color: var(--text-normal);
+	font-size: var(--font-ui-small);
+	margin-top: var(--size-2-2);
+}
+
+.wiro-dialog-footer .modal-button-container {
+	margin-top: 0;
+	flex-shrink: 0;
+}
+
+.wiro-form-description {
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+	margin-bottom: var(--size-4-3);
+	white-space: pre-line;
+}
+
+.wiro-form-field {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-2);
+	margin-bottom: var(--size-4-3);
+}
+
+.wiro-form-label {
+	font-weight: var(--font-semibold);
+	font-size: var(--font-ui-small);
+}
+
+.wiro-form-required {
+	color: var(--text-error);
+}
+
+.wiro-form-help {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}
+
+.wiro-form-textarea {
+	width: 100%;
+	min-height: 5em;
+	resize: vertical;
+}
+
+.wiro-form-files {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--size-2-2);
+}
+
+.wiro-form-file {
+	background-color: var(--background-modifier-hover);
+	border-radius: var(--radius-s);
+	padding: var(--size-2-1) var(--size-2-3);
+	font-size: var(--font-ui-smaller);
+}
+
+.wiro-form-file-controls {
+	display: flex;
+	gap: var(--size-4-2);
+	align-items: center;
+}
+
+.wiro-form-url {
+	flex: 1;
+}
+
+.wiro-form-advanced summary {
+	cursor: pointer;
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+	margin-bottom: var(--size-4-2);
+}
+
+.wiro-form-error,
+.wiro-error {
+	color: var(--text-error);
+	font-size: var(--font-ui-small);
+}
+
+.wiro-muted {
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+}
+
+/* Pickers. */
+.wiro-suggestion-detail {
+	display: block;
+	color: var(--text-muted);
+}
+
+.wiro-catalog-top {
+	display: flex;
+	justify-content: space-between;
+	gap: var(--size-4-3);
+}
+
+.wiro-catalog-slug {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.wiro-catalog-price {
+	color: var(--text-muted);
+	flex-shrink: 0;
+	font-size: var(--font-ui-small);
+}
+
+/* Streaming text result. */
+.wiro-text-output {
+	max-height: 50vh;
+	overflow-y: auto;
+	margin-top: var(--size-4-3);
+	padding: var(--size-4-2) var(--size-4-3);
+	border: var(--border-width) solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	user-select: text;
+}
+
+.wiro-text-live {
+	white-space: pre-wrap;
+}
+
+/* History view. */
+.wiro-history-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.wiro-history-row {
+	padding: var(--size-4-2) 0;
+	border-bottom: var(--border-width) solid var(--background-modifier-border);
+}
+
+.wiro-history-top {
+	display: flex;
+	justify-content: space-between;
+	gap: var(--size-4-2);
+}
+
+.wiro-history-title {
+	font-weight: var(--font-semibold);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.wiro-history-link {
+	display: inline-block;
+	margin-right: var(--size-4-2);
+	font-size: var(--font-ui-small);
 }

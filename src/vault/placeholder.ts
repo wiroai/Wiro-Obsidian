@@ -1,6 +1,5 @@
 import { MarkdownView, type App, type Editor, type EditorPosition, type TFile } from 'obsidian';
-import type { MediaKind } from './files';
-import { placeholderText, planInsertion } from './placement';
+import { placeholderText, planInsertion, topLine } from './placement';
 
 /**
  * A comment that marks where a result will go while its task runs. It is an
@@ -16,8 +15,8 @@ export class Placeholder {
 	) {}
 
 	/** Inserts the placeholder on its own line after the line at `at`. */
-	static insert(app: App, editor: Editor, file: TFile, at: EditorPosition, kind: MediaKind): Placeholder {
-		const token = placeholderText(kind);
+	static insert(app: App, editor: Editor, file: TFile, at: EditorPosition, label: string): Placeholder {
+		const token = placeholderText(label);
 		const lineCount = editor.lineCount();
 		const plan = planInsertion(
 			editor.getLine(at.line),
@@ -27,6 +26,17 @@ export class Placeholder {
 		);
 		editor.replaceRange(plan.text, { line: at.line, ch: plan.ch });
 		return new Placeholder(app, file, token, plan.text);
+	}
+
+	/** Inserts the placeholder as the first block of the note, after any front matter. */
+	static insertAtTop(app: App, editor: Editor, file: TFile, label: string): Placeholder {
+		const token = placeholderText(label);
+		const lines = editor.getValue().split('\n');
+		const line = topLine(lines);
+		const next = lines[line];
+		const text = `${line > 0 ? '\n' : ''}${token}${next !== undefined && next.trim() !== '' ? '\n\n' : '\n'}`;
+		editor.replaceRange(text, { line, ch: 0 });
+		return new Placeholder(app, file, token, text);
 	}
 
 	/** The editor that has the note open, if any. */

@@ -1,12 +1,18 @@
-import type { MediaKind } from './files';
-
 /** A short random id, so two runs in one note get different placeholders. */
 export function placeholderId(): string {
 	return Math.random().toString(36).slice(2, 8).padEnd(6, '0');
 }
 
-export function placeholderText(kind: MediaKind, id: string = placeholderId()): string {
-	return `%%Wiro AI is generating ${kind === 'image' ? 'an image' : 'speech'} (${id})%%`;
+/** "%%Wiro AI is generating an image (k3j9x2)%%" for the label "generating an image". */
+export function placeholderText(label: string, id: string = placeholderId()): string {
+	return `%%Wiro AI is ${label} (${id})%%`;
+}
+
+/** The line a block goes on at the top of a note: after the front matter, if there is one. */
+export function topLine(lines: string[]): number {
+	if (lines[0]?.trim() !== '---') return 0;
+	const end = lines.findIndex((line, index) => index > 0 && (line.trim() === '---' || line.trim() === '...'));
+	return end > 0 ? end + 1 : 0;
 }
 
 /**

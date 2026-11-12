@@ -1,19 +1,33 @@
 import { authHeaders, type Credentials } from './auth';
 import { WiroApiError } from './errors';
-import type { HttpClient, HttpResponse } from './http';
-import { parseToolDetail, type ModelSchema } from './schema';
+import type { HttpClient, HttpRequest, HttpResponse } from './http';
+import { buildMultipart } from './multipart';
+import { parsePricing, parseToolDetail, type ModelPricing, type ModelSchema } from './schema';
+import {
+	parseRunDetail,
+	parseWorkflowDetail,
+	parseWorkflowList,
+	type WorkflowDetail,
+	type WorkflowRunState,
+	type WorkflowSummary,
+} from './workflow';
 
 export const WIRO_API = 'https://api.wiro.ai/v1';
 
 /** How long one API request may take before the plugin stops waiting for it. */
 const REQUEST_TIMEOUT_MS = 60_000;
 
-/** One output file of a task. */
+/** Uploads can be large and slow. */
+const UPLOAD_TIMEOUT_MS = 300_000;
+
+/** One output of a task: a file, or the structured answer of an LLM ("raw"). */
 export interface TaskOutput {
 	name: string;
 	contentType: string;
 	url: string;
 	size?: number;
+	/** The structured content of a "raw" output. */
+	content?: unknown;
 }
 
 /** The parts of a Task/Detail answer the plugin reads (https://wiro.ai/docs/tasks). */
@@ -22,6 +36,7 @@ export interface TaskState {
 	status: string;
 	pexit: string;
 	outputs: TaskOutput[];
+	debugOutput: string;
 	debugError: string;
 	totalCost: string;
 	elapsedSeconds: string;
@@ -30,6 +45,27 @@ export interface TaskState {
 export interface StartedTask {
 	taskId: string;
 	token: string;
+}
+
+/** A model in the public catalog, as Tool/List lists it. */
+export interface CatalogEntry {
+	slug: string;
+	title: string;
+	description?: string;
+	categories: string[];
+	pricing: ModelPricing;
+}
+
+/** A task of the project, as Task/List lists it. */
+export interface TaskSummary {
+	id: string;
+	slug: string;
+	status: string;
+	pexit: string;
+	totalCost: string;
+	createdAt: number;
+	outputs: TaskOutput[];
+	debugOutput: string;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -74,27 +110,25 @@ function readErrors(data: Record<string, unknown>): { message: string; code?: nu
 	return { message: messages.join(' '), code };
 }
 
-function parseOutputs(value: unknown): TaskOutput[] {
+export function parseOutputs(value: unknown): TaskOutput[] {
 	if (!Array.isArray(value)) return [];
 	const outputs: TaskOutput[] = [];
 	for (const item of value as unknown[]) {
 		if (!isRecord(item)) continue;
 		const url = asString(item.url);
-		if (!url) continue;
+		const contentType = asString(item.contenttype);
+		if (!url && contentType !== 'raw') continue;
 		const size = Number(item.size);
-		outputs.push({
-			name: asString(item.name),
-			contentType: asString(item.contenttype),
-			url,
-			size: Number.isFinite(size) ? size : undefined,
-		});
+		const output: TaskOutput = { name: asString(item.name), contentType, url, size: Number.isFinite(size) ? size : undefined };
+		if (contentType === 'raw') output.content = item.content;
+		outputs.push(output);
 	}
 	return outputs;
 }
 
 /**
- * A small client for the Wiro AI Run API. Every call is a POST with a JSON
- * body; success is `result: true` and anything else becomes a WiroApiError.
+ * A small client for the Wiro AI Run API. Every call is a POST; success is
+ * `result: true` and anything else becomes a WiroApiError.
  */
 export class WiroClient {
 	constructor(
@@ -103,7 +137,12 @@ export class WiroClient {
 		private readonly baseUrl: string = WIRO_API,
 	) {}
 
-	private async post(route: string, body: Record<string, unknown>, authenticated = true): Promise<Record<string, unknown>> {
+	private async send(
+		route: string,
+		request: Pick<HttpRequest, 'json' | 'body' | 'contentType'>,
+		authenticated: boolean,
+		timeoutMs = REQUEST_TIMEOUT_MS,
+	): Promise<Record<string, unknown>> {
 		const headers: Record<string, string> = { Accept: 'application/json' };
 		if (authenticated) {
 			if (!this.credentials?.apiKey) {
@@ -115,8 +154,8 @@ export class WiroClient {
 		let response: HttpResponse;
 		try {
 			response = await withTimeout(
-				this.http({ url: `${this.baseUrl}${route}`, method: 'POST', headers, json: body }),
-				REQUEST_TIMEOUT_MS,
+				this.http({ url: `${this.baseUrl}${route}`, method: 'POST', headers, ...request }),
+				timeoutMs,
 				`The request to ${route} timed out.`,
 			);
 		} catch (error) {
@@ -146,6 +185,10 @@ export class WiroClient {
 		return data;
 	}
 
+	private post(route: string, body: Record<string, unknown>, authenticated = true): Promise<Record<string, unknown>> {
+		return this.send(route, { json: body }, authenticated);
+	}
+
 	/** Starts a task: POST /Run/{owner}/{project} (https://wiro.ai/docs/run-a-model). */
 	async run(slug: string, params: Record<string, unknown>): Promise<StartedTask> {
 		const [owner = '', project = ''] = slug.split('/');
@@ -166,6 +209,7 @@ export class WiroClient {
 			status: asString(task.status),
 			pexit: asString(task.pexit),
 			outputs: parseOutputs(task.outputs),
+			debugOutput: asString(task.debugoutput),
 			debugError: asString(task.debugerror),
 			totalCost: asString(task.totalcost),
 			elapsedSeconds: asString(task.elapsedseconds),
@@ -187,7 +231,28 @@ export class WiroClient {
 		await this.post('/Task/List', { limit: '1' });
 	}
 
-	/** Reads a model's parameters from the public catalog: POST /Tool/Detail. Needs no key. */
+	/** The project's latest tasks: POST /Task/List. */
+	async taskList(limit = 30): Promise<TaskSummary[]> {
+		const data = await this.post('/Task/List', { limit: String(limit) });
+		const rows = Array.isArray(data.tasklist) ? (data.tasklist as unknown[]) : [];
+		const tasks: TaskSummary[] = [];
+		for (const row of rows) {
+			if (!isRecord(row)) continue;
+			tasks.push({
+				id: asString(row.id),
+				slug: [asString(row.modelslugowner), asString(row.modelslugproject)].filter(Boolean).join('/'),
+				status: asString(row.status),
+				pexit: asString(row.pexit),
+				totalCost: asString(row.totalcost),
+				createdAt: Number(row.createtime) * 1000 || 0,
+				outputs: parseOutputs(row.outputs),
+				debugOutput: asString(row.debugoutput),
+			});
+		}
+		return tasks;
+	}
+
+	/** Reads a model's parameters and prices from the public catalog: POST /Tool/Detail. Needs no key. */
 	async toolDetail(slug: string): Promise<ModelSchema> {
 		const [slugowner = '', slugproject = ''] = slug.split('/');
 		const missing = `There is no public model "${slug}". Check the ID on wiro.ai/models.`;
@@ -203,5 +268,77 @@ export class WiroClient {
 		const schema = parseToolDetail(slug, data);
 		if (!schema) throw new WiroApiError(missing);
 		return schema;
+	}
+
+	/** Models of the public catalog: POST /Tool/List. Needs no key. */
+	async toolList(options: { categories?: string[]; search?: string; start?: number; limit?: number }): Promise<{ models: CatalogEntry[]; total: number }> {
+		const body: Record<string, unknown> = {
+			start: String(options.start ?? 0),
+			limit: String(options.limit ?? 50),
+			sort: 'relevance',
+			order: 'DESC',
+			hideworkflows: true,
+			summary: true,
+		};
+		if (options.categories?.length) body.categories = options.categories;
+		if (options.search) body.search = options.search;
+		const data = await this.post('/Tool/List', body, false);
+		const rows = Array.isArray(data.tool) ? (data.tool as unknown[]) : [];
+		const models: CatalogEntry[] = [];
+		for (const row of rows) {
+			if (!isRecord(row)) continue;
+			const owner = asString(row.cleanslugowner) || asString(row.slugowner);
+			const project = asString(row.cleanslugproject) || asString(row.slugproject);
+			if (!owner || !project) continue;
+			const entry: CatalogEntry = {
+				slug: `${owner}/${project}`,
+				title: asString(row.title) || `${owner}/${project}`,
+				categories: Array.isArray(row.categories) ? (row.categories as unknown[]).map(asString).filter(Boolean) : [],
+				pricing: parsePricing(row),
+			};
+			const description = asString(row.description).trim();
+			if (description) entry.description = description;
+			models.push(entry);
+		}
+		return { models, total: Number(data.total) || models.length };
+	}
+
+	/** Uploads a file to the project's Wiro storage and returns its URL: POST /File/Upload. */
+	async upload(fileName: string, contentType: string, data: ArrayBuffer): Promise<string> {
+		const multipart = buildMultipart({}, [{ field: 'file', fileName, contentType, data }]);
+		const result = await this.send('/File/Upload', { body: multipart.body, contentType: multipart.contentType }, true, UPLOAD_TIMEOUT_MS);
+		const list = Array.isArray(result.list) ? (result.list as unknown[]) : [];
+		const first = list.find(isRecord);
+		const url = first ? asString(first.url) : '';
+		if (!url) throw new WiroApiError(`Wiro AI stored ${fileName} without returning its URL.`);
+		return url;
+	}
+
+	/** The project's workflows: POST /Workflow/List. */
+	async workflowList(): Promise<WorkflowSummary[]> {
+		const data = await this.post('/Workflow/List', { scope: 'my', order: 'DESC', sort: 'updatetime', start: '0', limit: '100' });
+		return parseWorkflowList(data);
+	}
+
+	/** A workflow's inputs: POST /Workflow/Detail. */
+	async workflowDetail(fullSlug: string): Promise<WorkflowDetail> {
+		const detail = parseWorkflowDetail(await this.post('/Workflow/Detail', { slug: fullSlug }));
+		if (!detail) throw new WiroApiError(`There is no workflow "${fullSlug}" that this project can open.`);
+		return detail;
+	}
+
+	/** Starts a workflow run: POST /Workflow/Run. Returns the run token. */
+	async workflowRun(fullSlug: string, input: Record<string, unknown>): Promise<string> {
+		const body: Record<string, unknown> = { slug: fullSlug };
+		if (Object.keys(input).length > 0) body.input = input;
+		const data = await this.post('/Workflow/Run', body);
+		const token = asString(data.workflowtoken);
+		if (!token) throw new WiroApiError('The workflow started without a run token.');
+		return token;
+	}
+
+	/** Reads a workflow run: POST /Workflow/RunDetail. */
+	async workflowRunDetail(token: string): Promise<WorkflowRunState> {
+		return parseRunDetail(await this.post('/Workflow/RunDetail', { workflowtoken: token }), token);
 	}
 }

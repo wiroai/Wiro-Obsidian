@@ -1,10 +1,12 @@
 import { Notice } from 'obsidian';
 import type { TaskPhase } from '../wiro/task';
 
-export type JobPhase = TaskPhase | 'saving';
+export type JobPhase = TaskPhase | 'uploading' | 'saving' | 'writing';
 
 const PHASE_TEXT: Record<JobPhase, string> = {
 	starting: 'Starting',
+	uploading: 'Uploading the file',
+	writing: 'Writing',
 	waiting: 'Waiting for a free slot',
 	queued: 'In the queue',
 	running: 'Running',
@@ -43,13 +45,22 @@ export class ProgressNotice {
 
 	setPhase(phase: JobPhase): void {
 		this.phase = phase;
+		this.detail = '';
 		this.render();
 	}
+
+	/** Shows custom status text, such as "Step 2 of 5", instead of the phase. */
+	setDetail(detail: string): void {
+		this.detail = detail;
+		this.render();
+	}
+
+	private detail = '';
 
 	private render(): void {
 		if (this.closed) return;
 		const seconds = Math.floor((Date.now() - this.startedAt) / 1000);
-		this.statusEl.setText(`${PHASE_TEXT[this.phase]} · ${seconds} s`);
+		this.statusEl.setText(`${this.detail || PHASE_TEXT[this.phase]} · ${seconds} s`);
 	}
 
 	hide(): void {

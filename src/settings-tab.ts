@@ -4,48 +4,50 @@ import {
 	PluginSettingTab,
 	type App,
 	type ButtonComponent,
-	type SettingDefinitionGroup,
 	type SettingDefinitionItem,
+	type SettingDefinitionPage,
 	type SettingGroupItem,
 } from 'obsidian';
-import { catalogModels, selectedModel } from './catalog';
+import { catalogModels, FEATURE_IDS, FEATURES, modelName, type FeatureId } from './catalog';
 import type WiroPlugin from './main';
-import { CUSTOM_MODEL, kindKeys, type WiroSettings } from './settings';
-import type { MediaKind } from './vault/files';
+import { CatalogPicker } from './ui/pickers';
+import { WiroClient } from './wiro/client';
 import { errorMessage } from './wiro/errors';
+import type { GatewayModel } from './wiro/gateway';
+import { formatUsd, shortPrice } from './wiro/pricing';
 import { defaultOption, optionParams, parseExtraParams, parseModelSlug, sentenceCaseLabel } from './wiro/schema';
 import { explainRunError } from './wiro/task';
 
-/** Control keys for a model's options look like "option:image:aspectRatio". */
+/** Control keys for features look like "feature:image:model" and "option:image:aspectRatio". */
+const FEATURE_PREFIX = 'feature:';
 const OPTION_PREFIX = 'option:';
 
-type StringKey = Exclude<keyof WiroSettings, 'speechPlainText' | 'modelOptions'>;
-
-const STRING_KEYS = new Set<string>([
-	'apiKeySecretId',
-	'apiSecretSecretId',
-	'imageModel',
-	'imageCustomModel',
-	'imageExtraParams',
-	'imageFolder',
-	'speechModel',
-	'speechCustomModel',
-	'speechExtraParams',
-	'speechFolder',
-] satisfies StringKey[]);
+const STRING_KEYS = ['apiKeySecretId', 'apiSecretSecretId', 'imageFolder', 'videoFolder', 'audioFolder', 'textModel', 'translateLanguage'] as const;
+const BOOLEAN_KEYS = ['speechPlainText', 'confirmRuns', 'editorMenu'] as const;
+type StringKey = (typeof STRING_KEYS)[number];
+type BooleanKey = (typeof BOOLEAN_KEYS)[number];
 
 function isStringKey(key: string): key is StringKey {
-	return STRING_KEYS.has(key);
+	return (STRING_KEYS as readonly string[]).includes(key);
 }
 
-function parseOptionKey(key: string): { kind: MediaKind; param: string } | null {
-	if (!key.startsWith(OPTION_PREFIX)) return null;
-	const rest = key.slice(OPTION_PREFIX.length);
+function isBooleanKey(key: string): key is BooleanKey {
+	return (BOOLEAN_KEYS as readonly string[]).includes(key);
+}
+
+function isFeature(value: string): value is FeatureId {
+	return (FEATURE_IDS as string[]).includes(value);
+}
+
+/** "feature:image:model" or "option:image:aspectRatio" split into its parts. */
+function parseKey(key: string, prefix: string): { feature: FeatureId; name: string } | null {
+	if (!key.startsWith(prefix)) return null;
+	const rest = key.slice(prefix.length);
 	const colon = rest.indexOf(':');
-	const kind = rest.slice(0, colon);
-	const param = rest.slice(colon + 1);
-	if (colon < 0 || (kind !== 'image' && kind !== 'speech') || !param) return null;
-	return { kind, param };
+	const feature = rest.slice(0, colon);
+	const name = rest.slice(colon + 1);
+	if (colon < 0 || !isFeature(feature) || !name) return null;
+	return { feature, name };
 }
 
 function link(text: string, href: string): DocumentFragment {
@@ -55,8 +57,10 @@ function link(text: string, href: string): DocumentFragment {
 }
 
 export class WiroSettingTab extends PluginSettingTab {
-	/** Redraws the options after the user stops typing a model ID. */
-	private readonly refreshOptions = debounce(() => this.update(), 800, true);
+	/** Redraws the options after a model change settles. */
+	private readonly refreshSoon = debounce(() => this.update(), 300, true);
+	private gatewayModels: GatewayModel[] | null = null;
+	private gatewayError = '';
 
 	constructor(
 		app: App,
@@ -94,46 +98,83 @@ export class WiroSettingTab extends PluginSettingTab {
 					);
 				},
 			},
-			this.mediaGroup('image'),
-			this.mediaGroup('speech'),
+			{
+				type: 'group',
+				heading: 'Models',
+				items: [...FEATURE_IDS.map((feature) => this.featurePage(feature)), this.textPage()],
+			},
+			{
+				type: 'group',
+				heading: 'Files',
+				items: [
+					{
+						name: 'Image folder',
+						desc: 'Where new images are saved. Leave it empty to use the attachment folder from Files and links.',
+						control: { type: 'folder', key: 'imageFolder' },
+					},
+					{
+						name: 'Video folder',
+						desc: 'Where new videos are saved. Leave it empty to use the attachment folder.',
+						control: { type: 'folder', key: 'videoFolder' },
+					},
+					{
+						name: 'Audio folder',
+						desc: 'Where speech and music files are saved. Leave it empty to use the attachment folder.',
+						control: { type: 'folder', key: 'audioFolder' },
+					},
+				],
+			},
+			{
+				type: 'group',
+				heading: 'Runs',
+				items: [
+					{
+						name: 'Show the price before running',
+						desc: 'Commands that use the selection, the whole note or an embed open a dialog with the price first. Turn it off to run them right away.',
+						control: { type: 'toggle', key: 'confirmRuns' },
+					},
+					{
+						name: 'Editor menu',
+						desc: 'Show image, speech and text commands when you right-click selected text.',
+						control: { type: 'toggle', key: 'editorMenu' },
+					},
+				],
+			},
 		];
 	}
 
-	private mediaGroup(kind: MediaKind): SettingDefinitionGroup {
-		const keys = kindKeys(kind);
-		const modelChoices: Record<string, string> = {};
-		for (const model of catalogModels(kind)) modelChoices[model.slug] = model.name;
-		const saved = this.plugin.settings[keys.model];
-		if (saved !== CUSTOM_MODEL && !(saved in modelChoices)) modelChoices[saved] = saved;
-		modelChoices[CUSTOM_MODEL] = 'Other model';
-
-		const model = selectedModel(this.plugin.settings, kind);
-		const items: SettingGroupItem[] = [
+	private featurePage(feature: FeatureId): SettingDefinitionPage {
+		const info = FEATURES[feature];
+		const slug = parseModelSlug(this.plugin.settings.features[feature].model);
+		const choices: Record<string, string> = {};
+		for (const model of catalogModels(feature)) choices[model.slug] = model.name;
+		if (slug && !(slug in choices)) choices[slug] = slug;
+		const items: SettingDefinitionItem[] = [
 			{
 				name: 'Model',
-				desc: model.slug
-					? link(`Prices and details on wiro.ai/models/${model.slug}`, `https://wiro.ai/models/${model.slug}`)
-					: 'Any model from wiro.ai/models.',
-				control: { type: 'dropdown', key: keys.model, options: modelChoices },
+				desc: slug ? link(`Prices and details on wiro.ai/models/${slug}`, `https://wiro.ai/models/${slug}`) : 'Pick a model.',
+				control: { type: 'dropdown', key: `${FEATURE_PREFIX}${feature}:model`, options: choices },
 			},
 			{
-				name: 'Model ID',
-				desc: 'The end of the model page URL, such as google/nano-banana-pro for wiro.ai/models/google/nano-banana-pro.',
-				visible: () => this.plugin.settings[keys.model] === CUSTOM_MODEL,
-				control: {
-					type: 'text',
-					key: keys.customModel,
-					validate: (value) =>
-						value.trim() && !parseModelSlug(value) ? 'Use the owner/model form, such as google/nano-banana-pro.' : undefined,
+				name: 'Browse the catalog',
+				desc: `Pick any ${info.categories.map((category) => category.replace(/-/g, ' ')).join(', ')} model from wiro.ai/models, or paste a model ID.`,
+				render: (setting) => {
+					setting.addButton((button) =>
+						button.setButtonText('Browse').onClick(() => {
+							new CatalogPicker(this.app, new WiroClient(this.plugin.http, null), info.categories, (model) => {
+								void this.setControlValue(`${FEATURE_PREFIX}${feature}:model`, model.slug);
+							}).open();
+						}),
+					);
 				},
 			},
-			...this.optionItems(kind),
+			...this.optionItems(feature, slug),
 			{
 				name: 'Extra parameters',
-				desc: 'A JSON object sent with every run, for model parameters not listed above. Example: {"seed": 42}',
+				desc: 'A JSON object sent with every run, for model parameters without a dropdown. Example: {"seed": 42}',
 				control: {
 					type: 'textarea',
-					key: keys.extraParams,
+					key: `${FEATURE_PREFIX}${feature}:extraParams`,
 					validate: (value) => {
 						try {
 							parseExtraParams(value);
@@ -144,54 +185,71 @@ export class WiroSettingTab extends PluginSettingTab {
 					},
 				},
 			},
-			{
-				name: 'Folder',
-				desc: 'Where new files are saved. Leave it empty to use the attachment folder from Files and links.',
-				control: { type: 'folder', key: keys.folder },
-			},
 		];
-		if (kind === 'speech') {
+		if (feature === 'speech') {
 			items.push({
 				name: 'Read Markdown as plain text',
 				desc: 'Skips formatting marks, URLs, embeds and code, and reads the text of links.',
 				control: { type: 'toggle', key: 'speechPlainText' },
 			});
 		}
-		return { type: 'group', heading: kind === 'image' ? 'Images' : 'Speech', items };
+		if (feature === 'transcribe') {
+			items.push({
+				name: 'Transcript style',
+				desc: 'How the transcript goes under the audio file.',
+				render: (setting) => {
+					setting.addDropdown((dropdown) =>
+						dropdown
+							.addOption('callout', 'Callout')
+							.addOption('quote', 'Quote')
+							.addOption('paragraph', 'Plain paragraph')
+							.setValue(this.plugin.settings.transcriptStyle)
+							.onChange((value) => {
+								if (value === 'callout' || value === 'quote' || value === 'paragraph') {
+									this.plugin.settings.transcriptStyle = value;
+									void this.plugin.saveSettings();
+								}
+							}),
+					);
+				},
+			});
+		}
+		return {
+			type: 'page',
+			name: info.name,
+			desc: info.commands,
+			displayValue: () => {
+				const current = parseModelSlug(this.plugin.settings.features[feature].model);
+				return current ? modelName(current) : 'No model';
+			},
+			items,
+		};
 	}
 
-	/** One dropdown per select parameter of the chosen model. */
-	private optionItems(kind: MediaKind): SettingGroupItem[] {
-		const { slug } = selectedModel(this.plugin.settings, kind);
+	/** The price and one dropdown per select parameter of the feature's model. */
+	private optionItems(feature: FeatureId, slug: string | null): SettingGroupItem[] {
 		if (!slug) return [];
 		const schemas = this.plugin.schemas;
 		const schema = schemas.peek(slug);
 		if (!schema) {
 			const error = schemas.error(slug);
-			if (error) {
-				return [
-					{
-						name: 'Model options',
-						desc: `Could not load the options of ${slug}: ${error}`,
-						render: (setting) => {
-							setting.addButton((button) =>
-								button.setButtonText('Try again').onClick(() => {
-									void schemas.load(slug).then(
-							() => this.update(),
-							() => this.update(),
-						);
-								}),
-							);
-						},
-					},
-				];
-			}
 			return [
 				{
 					name: 'Model options',
-					desc: `Loading the options of ${slug}…`,
+					desc: error ? `Could not load the options of ${slug}: ${error}` : `Loading the options of ${slug}…`,
 					// Runs when the row is drawn, so only an open settings tab loads anything.
-					render: () => {
+					render: (setting) => {
+						if (error) {
+							setting.addButton((button) =>
+								button.setButtonText('Try again').onClick(() => {
+									void schemas.load(slug).then(
+										() => this.update(),
+										() => this.update(),
+									);
+								}),
+							);
+							return;
+						}
 						if (schemas.isLoading(slug)) return;
 						void schemas.load(slug).then(
 							() => this.update(),
@@ -201,21 +259,75 @@ export class WiroSettingTab extends PluginSettingTab {
 				},
 			];
 		}
-		return optionParams(schema).map((param) => {
+		const rows: SettingGroupItem[] = [];
+		if (schema.pricing && (schema.pricing.rows.length > 0 || schema.pricing.estimatedUsd)) {
+			rows.push({ name: 'Price', desc: `${shortPrice(schema.pricing)}. The run dialog shows the price for your settings.` });
+		}
+		for (const param of optionParams(schema)) {
 			const choices: Record<string, string> = {};
-			for (const option of param.options ?? []) {
-				choices[option.value] = option.label.trim() || 'Model default';
-			}
-			return {
+			for (const option of param.options ?? []) choices[option.value] = option.label.trim() || 'Model default';
+			rows.push({
 				name: sentenceCaseLabel(param.label),
 				control: {
 					type: 'dropdown' as const,
-					key: `${OPTION_PREFIX}${kind}:${param.id}`,
+					key: `${OPTION_PREFIX}${feature}:${param.id}`,
 					options: choices,
 					defaultValue: defaultOption(param),
 				},
-			};
+			});
+		}
+		return rows;
+	}
+
+	private textPage(): SettingDefinitionPage {
+		const current = this.plugin.settings.textModel;
+		const items: SettingDefinitionItem[] = [];
+		if (this.gatewayModels) {
+			const choices: Record<string, string> = {};
+			for (const model of this.gatewayModels) {
+				const price =
+					model.inputPerMillion !== undefined && model.outputPerMillion !== undefined && (model.inputPerMillion > 0 || model.outputPerMillion > 0)
+						? ` (${formatUsd(model.inputPerMillion)} / ${formatUsd(model.outputPerMillion)} per 1M tokens)`
+						: '';
+				choices[model.id] = `${model.name}${price}`;
+			}
+			if (!(current in choices)) choices[current] = current;
+			items.push({
+				name: 'Model',
+				desc: 'The LLM gateway model for Summarize, Rewrite, Translate, Continue writing and Ask about this note. Prices are for input and output tokens.',
+				control: { type: 'dropdown', key: 'textModel', options: choices },
+			});
+		} else {
+			items.push({
+				name: 'Model',
+				desc: this.gatewayError ? `Could not load the models: ${this.gatewayError}` : `Loading the LLM gateway models… Current: ${current}`,
+				render: () => {
+					if (this.gatewayError) return;
+					void this.plugin.gatewayModels().then(
+						(models) => {
+							this.gatewayModels = models;
+							this.update();
+						},
+						(error: unknown) => {
+							this.gatewayError = errorMessage(error);
+							this.update();
+						},
+					);
+				},
+			});
+		}
+		items.push({
+			name: 'Translate into',
+			desc: 'The language listed first when you translate.',
+			control: { type: 'text', key: 'translateLanguage' },
 		});
+		return {
+			type: 'page',
+			name: 'Text',
+			desc: 'Summarize, Rewrite, Translate, Continue writing, Ask about this note',
+			displayValue: () => this.gatewayModels?.find((model) => model.id === this.plugin.settings.textModel)?.name ?? this.plugin.settings.textModel,
+			items,
+		};
 	}
 
 	private async checkKey(button: ButtonComponent): Promise<void> {
@@ -236,37 +348,47 @@ export class WiroSettingTab extends PluginSettingTab {
 	}
 
 	getControlValue(key: string): unknown {
-		const option = parseOptionKey(key);
+		const settings = this.plugin.settings;
+		const option = parseKey(key, OPTION_PREFIX);
 		if (option) {
-			const { slug } = selectedModel(this.plugin.settings, option.kind);
-			return slug ? this.plugin.settings.modelOptions[slug]?.[option.param] : undefined;
+			const slug = parseModelSlug(settings.features[option.feature].model);
+			return slug ? settings.modelOptions[slug]?.[option.name] : undefined;
 		}
-		if (key === 'speechPlainText') return this.plugin.settings.speechPlainText;
-		if (isStringKey(key)) return this.plugin.settings[key];
+		const feature = parseKey(key, FEATURE_PREFIX);
+		if (feature) {
+			const entry = settings.features[feature.feature];
+			return feature.name === 'model' ? entry.model : feature.name === 'extraParams' ? entry.extraParams : undefined;
+		}
+		if (isBooleanKey(key)) return settings[key];
+		if (isStringKey(key)) return settings[key];
 		return undefined;
 	}
 
 	async setControlValue(key: string, value: unknown): Promise<void> {
 		const settings = this.plugin.settings;
-		const option = parseOptionKey(key);
+		let redraw = false;
+		const option = parseKey(key, OPTION_PREFIX);
+		const feature = parseKey(key, FEATURE_PREFIX);
 		if (option) {
-			const { slug } = selectedModel(settings, option.kind);
+			const slug = parseModelSlug(settings.features[option.feature].model);
 			if (!slug || typeof value !== 'string') return;
-			settings.modelOptions[slug] = { ...settings.modelOptions[slug], [option.param]: value };
-		} else if (key === 'speechPlainText') {
-			if (typeof value === 'boolean') settings.speechPlainText = value;
+			settings.modelOptions[slug] = { ...settings.modelOptions[slug], [option.name]: value };
+		} else if (feature) {
+			if (typeof value !== 'string') return;
+			if (feature.name === 'model') {
+				settings.features[feature.feature].model = value;
+				redraw = true;
+			} else if (feature.name === 'extraParams') {
+				settings.features[feature.feature].extraParams = value;
+			}
+		} else if (isBooleanKey(key)) {
+			if (typeof value === 'boolean') settings[key] = value;
 		} else if (isStringKey(key)) {
 			settings[key] = typeof value === 'string' ? value : '';
 		} else {
 			return;
 		}
 		await this.plugin.saveSettings();
-
-		if (key === 'imageModel' || key === 'speechModel') {
-			// The list of options depends on the model.
-			this.update();
-		} else if (key === 'imageCustomModel' || key === 'speechCustomModel') {
-			this.refreshOptions();
-		}
+		if (redraw) this.refreshSoon();
 	}
 }

@@ -137,6 +137,7 @@ function priceRows(value) {
 			if (typeof row.note === 'string' && row.note.trim()) entry.note = row.note.trim();
 			if (row.priceExtra !== undefined) entry.priceExtra = Number(row.priceExtra);
 			if (row.priceInput !== undefined) entry.priceInput = Number(row.priceInput);
+			if (Number(row.maxSeconds) > 0) entry.maxSeconds = Number(row.maxSeconds);
 			return entry;
 		});
 }

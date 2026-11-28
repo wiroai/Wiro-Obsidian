@@ -103,6 +103,8 @@ export function parsePriceRows(value: unknown): PriceRow[] {
 		if (extra !== undefined) entry.priceExtra = extra;
 		const input = asNumber(row.priceInput);
 		if (input !== undefined) entry.priceInput = input;
+		const maxSeconds = asNumber(row.maxSeconds);
+		if (maxSeconds !== undefined && maxSeconds > 0) entry.maxSeconds = maxSeconds;
 		result.push(entry);
 	}
 	return result;
